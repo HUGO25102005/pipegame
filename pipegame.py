@@ -8,7 +8,7 @@ class Character:
         self.rect = pg.Rect(rect)
         self.click = False
         self.image = pg.Surface(self.rect.size).convert()
-        self.image = pygame.image.load("OneDrive\Escritorio\Videojuego\images/hori_block.png")
+        self.image = pygame.image.load("./images/hori_block.png")
     def update(self,surface):
         if self.click:
             self.rect.center = pg.mouse.get_pos()
