@@ -3,7 +3,7 @@ import os,sys
 import pygame as pg #Avoid namespace flooding
 import pygame
 
-class Character:
+class Object:
     def __init__(self,rect):
         self.rect = pg.Rect(rect)
         self.click = False
@@ -14,19 +14,28 @@ class Character:
             self.rect.center = pg.mouse.get_pos()
         surface.blit(self.image,self.rect)
 
-def main(Surface,Player):
-    game_event_loop(Player)
+def update_obj2(Surface):
+    Surface.blit(obj2.image,obj2.rect)  
+    obj2.alpha = 255
+
+def main(Surface,obj):
+    game_event_loop(obj)
     Surface.fill(0)
-    Player.update(Surface)
+    obj.update(Surface)
+    obj2.update(Surface)
+    update_obj2(Surface)
 
 
-def game_event_loop(Player):
+def game_event_loop(obj):
     for event in pg.event.get():
         if event.type == pg.MOUSEBUTTONDOWN:
-            if Player.rect.collidepoint(event.pos):
-                Player.click = True
+            if obj.rect.collidepoint(event.pos):
+                obj.click = True
+            elif obj2.rect.collidepoint(event.pos):
+                obj2.click = True
         elif event.type == pg.MOUSEBUTTONUP:
-            Player.click = False
+            obj.click = False
+            obj2.click = False
         elif event.type == pg.QUIT:
             pg.quit(); sys.exit()
 
@@ -35,11 +44,11 @@ if __name__ == "__main__":
     pg.init()
     Screen = pg.display.set_mode((1000,600))
     MyClock = pg.time.Clock()
-    MyPlayer = Character((0,0,100,100))
-    MyPlayer.rect.center = Screen.get_rect().center
+    obj = Object((0,0,100,100))
+    obj.rect.center = Screen.get_rect().center
+    obj2 = Object((100,100,100,100))
     while 1:
-        main(Screen,MyPlayer)
+        main(Screen,obj)
         pg.display.update()
         MyClock.tick(60)
-
 
