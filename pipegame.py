@@ -32,7 +32,6 @@ def main(Surface,obj,obj2,obj3):
     update_obj2(Surface)
     update_obj3(Surface)
 
-
 def game_event_loop(obj,obj2, obj3):
     for event in pg.event.get():
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -54,10 +53,14 @@ if __name__ == "__main__":
     pg.init()
     Screen = pg.display.set_mode((1000,600))
     MyClock = pg.time.Clock()
-    obj = Object((0,0,100,100))
+    obj = Object((250,250,100,100))
     obj.rect.center = Screen.get_rect().center
-    obj2 = Object((100,100,100,100))
-    obj3 = Object((200,200,100,100))
+    obj2 = Object((350,350,100,100))
+    obj3 = Object((450,450,100,100))
+
+    obj2.image = pygame.image.load("./images/cross_way.png")
+    obj3.image = pygame.image.load("./images/topleft_way.png")
+
     while 1:
         main(Screen,obj,obj2,obj3)
         pg.display.update()
