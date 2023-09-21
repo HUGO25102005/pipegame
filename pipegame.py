@@ -8,7 +8,7 @@ class Object:
         self.rect = pg.Rect(rect)
         self.click = False
         self.image = pg.Surface(self.rect.size).convert()
-        self.image = pygame.image.load("./images/hori_block.png")
+        self.image = pygame.image.load("./assets/hori_block.png")
         self.collide_rect = self.rect
     def update(self,surface):
         if self.click:
@@ -51,15 +51,15 @@ def game_event_loop(obj,obj2, obj3):
 if __name__ == "__main__":
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     pg.init()
-    Screen = pg.display.set_mode((1000,600))
+    Screen = pg.display.set_mode((1280,720))
     MyClock = pg.time.Clock()
     obj = Object((250,250,100,100))
     obj.rect.center = Screen.get_rect().center
     obj2 = Object((350,350,100,100))
     obj3 = Object((450,450,100,100))
 
-    obj2.image = pygame.image.load("./images/cross_way.png")
-    obj3.image = pygame.image.load("./images/topleft_way.png")
+    obj2.image = pygame.image.load("./assets/cross_way.png")
+    obj3.image = pygame.image.load("./assets/topleft_way.png")
 
     while 1:
         main(Screen,obj,obj2,obj3)
