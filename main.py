@@ -15,12 +15,9 @@ def get_font(size): # Returns Press-Start-2P in the desired size
     return pygame.font.Font("assets/font.ttf", size)
 
 def play():
-     # Load the pipegame.py file
-    with open("pipegame.py", "r") as f:
-        code = f.read()
+    exec(open("pipegame.py", "r").read(), globals()) 
+    pygame.display.update()
 
-    # Execute the code
-    exec(code, globals())   
 def options():
     while True:
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
