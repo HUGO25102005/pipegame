@@ -1,17 +1,16 @@
 #Short Circuit
 import sys,os   
 import pygame
-import pygame as pg
 from button import Button
 
 pygame.init()
 
 SCREEN = pygame.display.set_mode((1280, 720))
-pygame.display.set_caption("Menu")
+pygame.display.set_caption("")
 
 BG = pygame.image.load("assets/background.png")
 
-def get_font(size): # Returns Press-Start-2P in the desired size
+def get_font(size): 
     return pygame.font.Font("assets/font.ttf", size)
 
 def play():
