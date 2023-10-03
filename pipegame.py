@@ -1,28 +1,33 @@
 #Short Circuit
+
+#Importación de módulos necesarios
 import os,sys
 import pygame
 
+# Definición de constantes
 NUM_CELLS = 6
 CELL_SIZE = 68
 
+# Definición de la clase "Object"
 class Object:
     def __init__(self, rect, cell_pos):
-        self.rect = pygame.Rect(rect)
-        self.cell_pos = cell_pos
-        self.click = False
-        self.clickable = True
-        self.image = pygame.Surface(self.rect.size).convert()
-        self.image = pygame.image.load("./assets/vert_block.png")
-        self.collide_rect = self.rect
+        self.rect = pygame.Rect(rect) # Crear un cuadrado con las dimensiones especificadas
+        self.cell_pos = cell_pos # Posición de la celda en la cuadrícula
+        self.click = False # Variable para rastrear si el objeto está siendo arrastrado
+        self.clickable = True # Variable para habilitar/deshabilitar la interacción con el objeto
+        self.image = pygame.Surface(self.rect.size).convert() # Crear una superficie del tamaño del rectángulo
+        self.image = pygame.image.load("./assets/vert_block.png") # Cargar una imagen para el objeto
+        self.collide_rect = self.rect # Cuadrado de colisión
 
     def update(self, surface):
         if self.click:
-            self.rect.center = pygame.mouse.get_pos()
+            self.rect.center = pygame.mouse.get_pos() # Actualizar la posición del objeto según la posición del ratón
             self.cell_pos = (self.rect.centerx // CELL_SIZE, self.rect.centery // CELL_SIZE)
             self.rect.centerx = self.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
             self.rect.centery = self.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
-        surface.blit(self.image, self.rect)
+        surface.blit(self.image, self.rect) # Dibujar la imagen del objeto en la superficie
 
+# Definición de funciones para actualizar objetos específicos
 def update_obj2(Surface):
     Surface.blit(obj2.image,obj2.rect)  
     obj2.alpha = 255
@@ -55,23 +60,29 @@ def update_obj9(Surface):
     Surface.blit(obj9.image,obj9.rect)
     obj9.alpha = 255
 
+# Definición de un botón de retorno
 back_button = pygame.Rect(10, 500, 100, 40)
 
+# Función principal
 def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
-    global game_over
-    game_event_loop(obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9)
-    Surface.fill((255, 255, 255))
+    global game_over # Variable para rastrear el estado del juego
+    game_event_loop(obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9) # Capturar eventos del juego
+    Surface.fill((255, 255, 255)) # Llenar la superficie con un color blanco
+
+    # Dibujar celdas verdes
 
     green_rect = pygame.Rect(0, 0, CELL_SIZE, CELL_SIZE)
     pygame.draw.rect(Surface, (0, 255, 0), green_rect)
 
     green_rect = pygame.Rect(5 * CELL_SIZE, 5 * CELL_SIZE, CELL_SIZE, CELL_SIZE)
     pygame.draw.rect(Surface, (0, 255, 0), green_rect)
-
+    
+    # Dibujar líneas de cuadrícula
     for i in range(NUM_CELLS + 1):
         pygame.draw.line(Surface, (0, 0, 0), (0, i * CELL_SIZE), (NUM_CELLS * CELL_SIZE, i * CELL_SIZE))
         pygame.draw.line(Surface, (0, 0, 0), (i * CELL_SIZE, 0), (i * CELL_SIZE, NUM_CELLS * CELL_SIZE))
-
+    
+    # Actualizar y dibujar objetos en la superficie
     obj.update(Surface)
     obj2.update(Surface)
     obj3.update(Surface)
@@ -89,11 +100,13 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
     update_obj7(Surface)
     update_obj8(Surface)
     update_obj9(Surface)
-
+    
+    # Cargar una nueva imagen y aplicarla a los objetos 6 al 9
     new_image = pygame.image.load("./assets/hori_block.png")
     for obj6_9 in [obj6, obj7, obj8, obj9]:
         obj6_9.image = new_image 
-
+    
+    # Verificar si se ha completado el juego
     if (
         obj.cell_pos[0] == 0 and 1 <= obj.cell_pos[1] <= 4 and
         obj2.cell_pos[0] == 0 and 1 <= obj2.cell_pos[1] <= 4 and
@@ -114,19 +127,22 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
         obj7.clickable = False
         obj8.clickable = False
         obj9.clickable = False
-
+        
+        # Mostrar un mensaje de victoria
         font = pygame.font.Font(None, 36)
         text = font.render("You Won", True, (255, 0, 0))
         text_rect = text.get_rect(center=(Surface.get_width() // 2, Surface.get_height() // 2))
         Surface.blit(text, text_rect)
-
+        
+        # Dibujar un botón de retorno
         back_button_rect = pygame.Rect(155, text_rect.bottom + 20, 100, 40)
         pygame.draw.rect(Surface, (0, 255, 0), back_button_rect)
         font = pygame.font.Font(None, 24)
         text = font.render("Back", True, (255, 255, 255))
         text_rect = text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
         Surface.blit(text, text_rect)
-
+        
+        # Manejar eventos de clic en el botón de retorno
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and back_button_rect.collidepoint(event.pos):
                 exec(open("./main.py", "r").read(), globals()) 
@@ -136,9 +152,11 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
 
     pygame.display.update()
 
+# Función para manejar eventos del juego
 def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
+            # Manejar el evento de clic del mouse en los objetos
             if obj.rect.collidepoint(event.pos) and obj.clickable:
                 obj.click = True
             elif obj2.rect.collidepoint(event.pos) and obj2.clickable:
@@ -158,6 +176,7 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
             elif obj9.rect.collidepoint(event.pos)and obj9.clickable:
                 obj9.click = True
         elif event.type == pygame.MOUSEBUTTONUP:
+        # Manejar el evento de liberación del mouse para detener el arrastre
             obj.click = False
             obj2.click = False
             obj3.click = False
@@ -173,6 +192,7 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
             pygame.quit()
             sys.exit()
 
+# Función principal del programa
 if __name__ == "__main__":
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     pygame.init()
