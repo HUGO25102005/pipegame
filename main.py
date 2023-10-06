@@ -8,12 +8,18 @@ from button import Button # Importación de la clase Button desde un módulo per
 # Inicialización de Pygame
 pygame.init()
 
+# Obtener la resolución de la pantalla del usuario
+info = pygame.display.Info()
+SCREEN_WIDTH = info.current_w
+SCREEN_HEIGHT = info.current_h
+
 # Configuración de la ventana principal
-SCREEN = pygame.display.set_mode((1280, 720))
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("") # Puedes poner un título entre las comillas
 
 # Cargar una imagen de fondo
 BG = pygame.image.load("assets/background.png")
+BG = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Función para obtener una fuente con el tamaño especificado
 def get_font(size): 
@@ -61,16 +67,16 @@ def main_menu():
         MENU_MOUSE_POS = pygame.mouse.get_pos()
         
         # Renderiza y muestra el título del menú principal
-        MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
+        MENU_TEXT = get_font(100).render("SHORT CIRCUIT", True, "#88ff3f")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
         
         # Crea botones para "JUGAR", "OPCIONES" y "SALIR" en el menú principal
         PLAY_BUTTON = Button(image=pygame.image.load("assets/play.png"), pos=(640, 250), 
-                            text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+                            text_input="PLAY", font=get_font(75), base_color="#bbbbbb", hovering_color="White")
         OPTIONS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=(640, 400), 
-                            text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+                            text_input="OPTIONS", font=get_font(75), base_color="#bbbbbb", hovering_color="White")
         QUIT_BUTTON = Button(image=pygame.image.load("assets/quit.png"), pos=(640, 550), 
-                            text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+                            text_input="QUIT", font=get_font(75), base_color="#bbbbbb", hovering_color="White")
 
         SCREEN.blit(MENU_TEXT, MENU_RECT) # Dibuja el título del menú
         

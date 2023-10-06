@@ -8,6 +8,27 @@ import pygame
 NUM_CELLS = 6
 CELL_SIZE = 68
 
+# Obtener la resolución de la pantalla del usuario
+info = pygame.display.Info()
+SCREEN_WIDTH = info.current_w
+SCREEN_HEIGHT = info.current_h
+
+# Calcula el ancho y alto de la tabla
+TABLE_WIDTH = NUM_CELLS * CELL_SIZE
+TABLE_HEIGHT = NUM_CELLS * CELL_SIZE
+
+# Calcula la posición inicial para centrar la tabla en la pantalla
+TABLE_X = (SCREEN_WIDTH - TABLE_WIDTH) // 2
+TABLE_Y = (SCREEN_HEIGHT - TABLE_HEIGHT) // 2
+
+# Configuración de la ventana principal
+Screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+pygame.display.set_caption("") 
+
+# Cargar una imagen de fondo
+BG = pygame.image.load("assets/image.png")
+BG = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
 # Definición de la clase "Object"
 class Object:
     def __init__(self, rect, cell_pos):
@@ -65,23 +86,29 @@ back_button = pygame.Rect(10, 500, 100, 40)
 
 # Función principal
 def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
-    global game_over # Variable para rastrear el estado del juego
     game_event_loop(obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9) # Capturar eventos del juego
-    Surface.fill((255, 255, 255)) # Llenar la superficie con un color blanco
+    Surface.blit(BG, (0, 0)) # Dibujar el fondo del nivel
+
+    # Dibujar todas las celdas como blancas
+    for x in range(NUM_CELLS):
+        for y in range(NUM_CELLS):
+                white_rect = pygame.Rect(TABLE_X + x * CELL_SIZE, TABLE_Y + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                pygame.draw.rect(Surface, (255, 255, 255), white_rect)
 
     # Dibujar celdas verdes
-
-    green_rect = pygame.Rect(0, 0, CELL_SIZE, CELL_SIZE)
+    green_rect = pygame.Rect(TABLE_X + 0, TABLE_Y + 0, CELL_SIZE, CELL_SIZE)
     pygame.draw.rect(Surface, (0, 255, 0), green_rect)
 
-    green_rect = pygame.Rect(5 * CELL_SIZE, 5 * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+    green_rect = pygame.Rect(TABLE_X + 5 * CELL_SIZE, TABLE_Y + 5 * CELL_SIZE, CELL_SIZE, CELL_SIZE)
     pygame.draw.rect(Surface, (0, 255, 0), green_rect)
     
-    # Dibujar líneas de cuadrícula
+     # Dibujar líneas de cuadrícula
     for i in range(NUM_CELLS + 1):
-        pygame.draw.line(Surface, (0, 0, 0), (0, i * CELL_SIZE), (NUM_CELLS * CELL_SIZE, i * CELL_SIZE))
-        pygame.draw.line(Surface, (0, 0, 0), (i * CELL_SIZE, 0), (i * CELL_SIZE, NUM_CELLS * CELL_SIZE))
-    
+        # Dibuja líneas horizontales centradas en la tabla
+        pygame.draw.line(Surface, (0, 0, 0), (TABLE_X, TABLE_Y + i * CELL_SIZE), (TABLE_X + TABLE_WIDTH, TABLE_Y + i * CELL_SIZE))
+        # Dibuja líneas verticales centradas en la tabla
+        pygame.draw.line(Surface, (0, 0, 0), (TABLE_X + i * CELL_SIZE, TABLE_Y), (TABLE_X + i * CELL_SIZE, TABLE_Y + TABLE_HEIGHT))  
+
     # Actualizar y dibujar objetos en la superficie
     obj.update(Surface)
     obj2.update(Surface)
@@ -196,7 +223,7 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
 if __name__ == "__main__":
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     pygame.init()
-    Screen = pygame.display.set_mode((NUM_CELLS * CELL_SIZE, NUM_CELLS * CELL_SIZE))
+    Screen.blit(BG, (0, 0)) # Dibuja la imagen de fondo en la pantalla
     MyClock = pygame.time.Clock()
     obj = Object((CELL_SIZE * 1, CELL_SIZE * 1, CELL_SIZE, CELL_SIZE), (1, 1))  
     obj2 = Object((CELL_SIZE * 2, CELL_SIZE * 2, CELL_SIZE, CELL_SIZE), (2, 2))
