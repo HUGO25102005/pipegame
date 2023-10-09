@@ -13,6 +13,9 @@ info = pygame.display.Info()
 SCREEN_WIDTH = info.current_w
 SCREEN_HEIGHT = info.current_h
 
+# Definir la resolución base en la que se diseñaron los elementos
+base_resolution = (1280, 720)
+
 # Configuración de la ventana principal
 SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("") # Puedes poner un título entre las comillas
@@ -59,6 +62,20 @@ def options():
 
         pygame.display.update()
 
+# Función para obtener una fuente con el tamaño escalado en función de la resolución
+def get_scaled_font(size):
+    base_resolution = (1280, 720)  # Resolución base en la que se diseñaron los elementos
+    scale_factor = min(SCREEN_WIDTH / base_resolution[0], SCREEN_HEIGHT / base_resolution[1])
+    scaled_size = int(size * scale_factor)
+    return pygame.font.Font("assets/font.ttf", scaled_size)
+
+# Función para calcular la posición escalada en función de la resolución
+def get_scaled_position(x, y):
+    scale_factor = min(SCREEN_WIDTH / base_resolution[0], SCREEN_HEIGHT / base_resolution[1])
+    scaled_x = int(x * scale_factor)
+    scaled_y = int(y * scale_factor)
+    return (scaled_x, scaled_y)
+
 # Función para mostrar el menú principal
 def main_menu():
     while True:
@@ -68,20 +85,20 @@ def main_menu():
         
         # Renderiza y muestra el título del menú principal
         MENU_TEXT = get_font(100).render("SHORT CIRCUIT", True, "#88ff3f")
-        MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+        MENU_RECT = MENU_TEXT.get_rect(center=get_scaled_position(640, 100))
         
         # Crea botones para "JUGAR", "OPCIONES" y "SALIR" en el menú principal
-        PLAY_BUTTON = Button(image=pygame.image.load("assets/play.png"), pos=(640, 250), 
-                            text_input="PLAY", font=get_font(75), base_color="#bbbbbb", hovering_color="White")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=(640, 400), 
-                            text_input="OPTIONS", font=get_font(75), base_color="#bbbbbb", hovering_color="White")
-        QUIT_BUTTON = Button(image=pygame.image.load("assets/quit.png"), pos=(640, 550), 
-                            text_input="QUIT", font=get_font(75), base_color="#bbbbbb", hovering_color="White")
+        PLAY_BUTTON = Button(image=pygame.image.load("assets/play.png"), pos=get_scaled_position(640, 250), 
+                            text_input="PLAY", font=get_scaled_font(75), base_color="#bbbbbb", hovering_color="White")
+        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 400), 
+                            text_input="OPTIONS", font=get_scaled_font(75), base_color="#bbbbbb", hovering_color="White")
+        QUIT_BUTTON = Button(image=pygame.image.load("assets/quit.png"), pos=get_scaled_position(640, 550), 
+                            text_input="QUIT", font=get_scaled_font(75), base_color="#bbbbbb", hovering_color="White")
 
         SCREEN.blit(MENU_TEXT, MENU_RECT) # Dibuja el título del menú
         
         # Actualiza y muestra los botones en el menú principal
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]MENU_RECT = MENU_TEXT.get_rect(center=(640, 100)):
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
         
