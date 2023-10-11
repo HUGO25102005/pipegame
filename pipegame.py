@@ -18,8 +18,8 @@ TABLE_WIDTH = NUM_CELLS * CELL_SIZE
 TABLE_HEIGHT = NUM_CELLS * CELL_SIZE
 
 # Calcula la posición inicial para centrar la tabla en la pantalla
-TABLE_X = (SCREEN_WIDTH - TABLE_WIDTH) // 2
-TABLE_Y = (SCREEN_HEIGHT - TABLE_HEIGHT) // 2
+TABLE_X = 0
+TABLE_Y = 0
 
 # Configuración de la ventana principal
 Screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
@@ -213,8 +213,33 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
             obj7.click = False
             obj8.click = False
             obj9.click = False
+            # Verificar y corregir la posición de los objetos si están fuera de los límites
             obj.rect.centerx = obj.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
             obj.rect.centery = obj.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+            obj2.rect.centerx = obj2.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
+            obj2.rect.centery = obj2.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+            obj3.rect.centerx = obj3.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
+            obj3.rect.centery = obj3.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+            obj4.rect.centerx = obj4.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
+            obj4.rect.centery = obj4.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+            obj5.rect.centerx = obj5.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
+            obj5.rect.centery = obj5.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+            obj6.rect.centerx = obj6.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
+            obj6.rect.centery = obj6.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+            obj7.rect.centerx = obj7.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
+            obj7.rect.centery = obj7.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+            obj8.rect.centerx = obj8.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
+            obj8.rect.centery = obj8.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+            obj9.rect.centerx = obj9.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
+            obj9.rect.centery = obj9.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+
+            # Asegurarse de que los objetos no se muevan fuera de la tabla
+            for obj in [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]:
+                obj.rect.centerx = max(CELL_SIZE // 2, obj.rect.centerx)
+                obj.rect.centerx = min(TABLE_WIDTH - CELL_SIZE // 2, obj.rect.centerx)
+                obj.rect.centery = max(CELL_SIZE // 2, obj.rect.centery)
+                obj.rect.centery = min(TABLE_HEIGHT - CELL_SIZE // 2, obj.rect.centery)
+
         elif event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
