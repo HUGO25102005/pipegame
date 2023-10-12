@@ -8,6 +8,8 @@ import pygame
 NUM_CELLS = 6
 CELL_SIZE = 68
 
+#Detectar si el juego ha terminado
+game_over = False
 
 # Definir el tiempo inicial en segundos
 INITIAL_TIME = 30
@@ -92,7 +94,8 @@ def update_obj9(Surface):
 back_button = pygame.Rect(10, 500, 100, 40)
 
 # Función principal
-def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
+def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj11):
+    global game_over
     game_event_loop(obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9) # Capturar eventos del juego
     Surface.blit(BG, (0, 0)) # Dibujar el fondo del nivel
 
@@ -102,13 +105,6 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
                 white_rect = pygame.Rect(TABLE_X + x * CELL_SIZE, TABLE_Y + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 pygame.draw.rect(Surface, (255, 255, 255), white_rect)
 
-    # Dibujar celdas verdes
-    green_rect = pygame.Rect(TABLE_X + 0, TABLE_Y + 0, CELL_SIZE, CELL_SIZE)
-    pygame.draw.rect(Surface, (0, 255, 0), green_rect)
-
-    green_rect = pygame.Rect(TABLE_X + 5 * CELL_SIZE, TABLE_Y + 5 * CELL_SIZE, CELL_SIZE, CELL_SIZE)
-    pygame.draw.rect(Surface, (0, 255, 0), green_rect)
-    
      # Dibujar líneas de cuadrícula
     for i in range(NUM_CELLS + 1):
         # Dibuja líneas horizontales centradas en la tabla
@@ -126,6 +122,8 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
     obj7.update(Surface)
     obj8.update(Surface)
     obj9.update(Surface)
+    obj10.update(Surface)
+    obj11.update(Surface)
     update_obj2(Surface)
     update_obj3(Surface)
     update_obj4(Surface)
@@ -153,7 +151,7 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
         1 <= obj9.cell_pos[0] <= 4 and obj9.cell_pos[1] == 5 and
         pygame.mouse.get_pressed()[0] == False
     ):
-        
+        game_over = True
         obj.clickable = False
         obj2.clickable = False
         obj3.clickable = False
@@ -216,6 +214,7 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
             elif obj9.rect.collidepoint(event.pos)and obj9.clickable:
                 obj9.click = True
         elif event.type == pygame.MOUSEBUTTONUP:
+            game_over = True
         # Manejar el evento de liberación del mouse para detener el arrastre
             obj.click = False
             obj2.click = False
@@ -236,7 +235,7 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
                 move_obj.rect.centery = max(CELL_SIZE // 2, move_obj.rect.centery)
                 move_obj.rect.centery = min(TABLE_HEIGHT - CELL_SIZE // 2, move_obj.rect.centery)
 
-            # Verificar si la celda de destino está ocupada por otro objeto
+            # Verificar i la celda de destino está ocupada por otro objeto
             for check_obj in [obj, obj2, obj3, obj4, obj6, obj7, obj8, obj9]:
                 if check_obj != move_obj and move_obj.cell_pos == check_obj.cell_pos:
                     # La celda de destino está ocupada, revertir el movimiento
@@ -250,10 +249,12 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
 
 # Función principal del programa
 if __name__ == "__main__":
-    # Inicializar el tiempo restante
-    time_remaining = INITIAL_TIME
     # Crear un reloj para contar el tiempo
     timer = pygame.time.Clock()
+    
+    start_time = pygame.time.get_ticks()  # Registra el tiempo de inicio del juego en milisegundos
+
+    time_remaining = INITIAL_TIME  # Tiempo inicial en segundos
 
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     pygame.init()
@@ -268,24 +269,43 @@ if __name__ == "__main__":
     obj7 = Object((CELL_SIZE * 3, CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (3, 5))
     obj8 = Object((CELL_SIZE * 4, CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (4, 3)) 
     obj9 = Object((CELL_SIZE * 2, CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (2, 5))
+    obj10 = Object((CELL_SIZE * 0, CELL_SIZE * 0, CELL_SIZE, CELL_SIZE), (0, 0))
+    obj11 = Object((CELL_SIZE * 5, CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (5, 5))
+    obj10.image = pygame.image.load("./assets/fuzebox_start1.png")
+    obj11.image = pygame.image.load("./assets/fuzebox_end1.png")
     obj5.image = pygame.image.load("./assets/topright_block.png")
 
     while 1:
-         # Reducir el tiempo restante en cada iteración
-        time_remaining -= 1 / 60  # Reducir 1 segundo por cada segundo de juego
-
+        # Obtén el tiempo transcurrido desde el inicio del juego en milisegundos
+        current_time = pygame.time.get_ticks()
+        
+        # Calcula el tiempo restante en segundos restando el tiempo transcurrido
+        time_remaining = max(INITIAL_TIME - (current_time - start_time) / 1000, 0)
         # Renderizar el texto del temporizador
         timer_text = font.render(f"Time: {max(int(time_remaining), 0)}", True, (255, 0, 0))
 
-        main(Screen,obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9)
-
-        # Dibujar el texto del temporizador en la esquina superior derecha
-        text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
-        Screen.blit(timer_text, text_rect)
-        pygame.display.update()
-
+        main(Screen,obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9,obj10,obj11)
+        
+        if not game_over:
+            # Actualiza y dibuja el texto del temporizador
+            timer_text = font.render(f"Time: {max(int(time_remaining), 0)}", True, (255, 0, 0))
+            text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+            Screen.blit(timer_text, text_rect)
+    
         # Verificar si el tiempo ha llegado a 0
-        if time_remaining <= 0:
+        if time_remaining <= 0 and not game_over:
+
+            # Manejar el evento de liberación del mouse para detener el arrastre
+            obj.click = False
+            obj2.click = False
+            obj3.click = False
+            obj4.click = False
+            obj5.click = False
+            obj6.click = False
+            obj7.click = False
+            obj8.click = False
+            obj9.click = False
+            mouse_release()
 
             # Mostrar "Game Over"
             game_over_text = font.render("Game Over", True, (255, 0, 0))
