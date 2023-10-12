@@ -254,10 +254,10 @@ if __name__ == "__main__":
     obj2 = Object((CELL_SIZE * 2, CELL_SIZE * 2, CELL_SIZE, CELL_SIZE), (2, 2))
     obj3 = Object((CELL_SIZE * 4, CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (4, 4)) 
     obj4 = Object((CELL_SIZE * 2, CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (2, 3))
-    obj5 = Object((CELL_SIZE * 3, CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (3, 3))
+    obj5 = Object((CELL_SIZE * 3, CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (3, 4))
     obj6 = Object((CELL_SIZE * 1, CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (1, 3))  
     obj7 = Object((CELL_SIZE * 3, CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (3, 5))
-    obj8 = Object((CELL_SIZE * 4, CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (4, 2)) 
+    obj8 = Object((CELL_SIZE * 4, CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (4, 3)) 
     obj9 = Object((CELL_SIZE * 2, CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (2, 5))
     obj5.image = pygame.image.load("./assets/topright_block.png")
 

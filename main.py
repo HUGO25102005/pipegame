@@ -98,7 +98,7 @@ def main_menu():
         SCREEN.blit(MENU_TEXT, MENU_RECT) # Dibuja el título del menú
         
         # Actualiza y muestra los botones en el menú principal
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]MENU_RECT = MENU_TEXT.get_rect(center=(640, 100)):
+        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
         
