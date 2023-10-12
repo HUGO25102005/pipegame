@@ -8,6 +8,12 @@ from button import Button # Importación de la clase Button desde un módulo per
 # Inicialización de Pygame
 pygame.init()
 
+# Cargar el archivo de audio
+pygame.mixer.music.load("assets/Rose_Garden.ogg")
+
+# Reproducir el audio en bucle
+pygame.mixer.music.play(-1)  # El valor -1 indica que el audio se reproducirá en bucle infinito
+
 # Obtener la resolución de la pantalla del usuario
 info = pygame.display.Info()
 SCREEN_WIDTH = info.current_w
@@ -30,6 +36,13 @@ def get_font(size):
 
 # Función para comenzar el juego
 def play():
+    pygame.mixer.music.stop()
+    # Cargar el archivo de audio
+    pygame.mixer.music.load("assets/A_Lonely_Cherry_Tree.ogg")
+
+    # Reproducir el audio en bucle
+    pygame.mixer.music.play(-1)  # El valor -1 indica que el audio se reproducirá en bucle infinito
+
     exec(open("pipegame.py", "r").read(), globals()) # Ejecuta el archivo "pipegame.py" 
     pygame.display.update()
 
