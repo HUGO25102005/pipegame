@@ -43,6 +43,7 @@ class Object:
     def __init__(self, rect, cell_pos):
         self.rect = pygame.Rect(rect) # Crear un cuadrado con las dimensiones especificadas
         self.cell_pos = cell_pos # Posición de la celda en la cuadrícula
+        self.original_cell_pos = cell_pos
         self.click = False # Variable para rastrear si el objeto está siendo arrastrado
         self.clickable = True # Variable para habilitar/deshabilitar la interacción con el objeto
         self.image = pygame.Surface(self.rect.size).convert() # Crear una superficie del tamaño del rectángulo
@@ -215,7 +216,7 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
                 obj9.click = True
         elif event.type == pygame.MOUSEBUTTONUP:
             game_over = True
-        # Manejar el evento de liberación del mouse para detener el arrastre
+            # Manejar el evento de liberación del mouse para detener el arrastre
             obj.click = False
             obj2.click = False
             obj3.click = False
@@ -226,22 +227,18 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
             obj8.click = False
             obj9.click = False
 
+            # **Regresar los objetos a su posición original**
+            for move_obj in [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]:
+                if not move_obj.click and move_obj.cell_pos == (0, 0) or move_obj.cell_pos == (5, 5):
+                    move_obj.rect.centerx = move_obj.original_cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
+                    move_obj.rect.centery = move_obj.original_cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
+
             # Verificar y corregir la posición de los objetos si están fuera de los límites
             for move_obj in [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]:
-                move_obj.rect.centerx = move_obj.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
-                move_obj.rect.centery = move_obj.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
                 move_obj.rect.centerx = max(CELL_SIZE // 2, move_obj.rect.centerx)
                 move_obj.rect.centerx = min(TABLE_WIDTH - CELL_SIZE // 2, move_obj.rect.centerx)
                 move_obj.rect.centery = max(CELL_SIZE // 2, move_obj.rect.centery)
                 move_obj.rect.centery = min(TABLE_HEIGHT - CELL_SIZE // 2, move_obj.rect.centery)
-
-            # Verificar i la celda de destino está ocupada por otro objeto
-            for check_obj in [obj, obj2, obj3, obj4, obj6, obj7, obj8, obj9]:
-                if check_obj != move_obj and move_obj.cell_pos == check_obj.cell_pos:
-                    # La celda de destino está ocupada, revertir el movimiento
-                    move_obj.cell_pos = (move_obj.rect.centerx // CELL_SIZE, move_obj.rect.centery // CELL_SIZE)
-                    move_obj.rect.centerx = move_obj.cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
-                    move_obj.rect.centery = move_obj.cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
 
         elif event.type == pygame.QUIT:
             pygame.quit()
