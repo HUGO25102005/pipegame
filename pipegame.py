@@ -8,6 +8,13 @@ import pygame
 NUM_CELLS = 6
 CELL_SIZE = 68
 
+
+# Definir el tiempo inicial en segundos
+INITIAL_TIME = 30
+
+# Crear un objeto de fuente para el temporizador
+font = pygame.font.Font(None, 36)
+
 # Obtener la resolución de la pantalla del usuario
 info = pygame.display.Info()
 SCREEN_WIDTH = info.current_w
@@ -143,8 +150,10 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
         1 <= obj6.cell_pos[0] <= 4 and obj6.cell_pos[1] == 5 and
         1 <= obj7.cell_pos[0] <= 4 and obj7.cell_pos[1] == 5 and
         1 <= obj8.cell_pos[0] <= 4 and obj8.cell_pos[1] == 5 and
-        1 <= obj9.cell_pos[0] <= 4 and obj9.cell_pos[1] == 5
+        1 <= obj9.cell_pos[0] <= 4 and obj9.cell_pos[1] == 5 and
+        pygame.mouse.get_pressed()[0] == False
     ):
+        
         obj.clickable = False
         obj2.clickable = False
         obj3.clickable = False
@@ -162,12 +171,13 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
         Surface.blit(text, text_rect)
         
         # Dibujar un botón de retorno
-        back_button_rect = pygame.Rect(155, text_rect.bottom + 20, 100, 40)
+        back_button_rect = pygame.Rect(Surface.get_width() // 2 - 50, text_rect.bottom + 20, 100, 40)
         pygame.draw.rect(Surface, (0, 255, 0), back_button_rect)
         font = pygame.font.Font(None, 24)
         text = font.render("Back", True, (255, 255, 255))
         text_rect = text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
         Surface.blit(text, text_rect)
+
         
         # Manejar eventos de clic en el botón de retorno
         for event in pygame.event.get():
@@ -178,6 +188,9 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9):
                 sys.exit()
 
     pygame.display.update()
+
+def mouse_release():
+    pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONUP, button=pygame.BUTTON_LEFT))
 
 # Función para manejar eventos del juego
 def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
@@ -237,6 +250,11 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
 
 # Función principal del programa
 if __name__ == "__main__":
+    # Inicializar el tiempo restante
+    time_remaining = INITIAL_TIME
+    # Crear un reloj para contar el tiempo
+    timer = pygame.time.Clock()
+
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     pygame.init()
     Screen.blit(BG, (0, 0)) # Dibuja la imagen de fondo en la pantalla
@@ -253,6 +271,42 @@ if __name__ == "__main__":
     obj5.image = pygame.image.load("./assets/topright_block.png")
 
     while 1:
+         # Reducir el tiempo restante en cada iteración
+        time_remaining -= 1 / 60  # Reducir 1 segundo por cada segundo de juego
+
+        # Renderizar el texto del temporizador
+        timer_text = font.render(f"Time: {max(int(time_remaining), 0)}", True, (255, 0, 0))
+
         main(Screen,obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9)
+
+        # Dibujar el texto del temporizador en la esquina superior derecha
+        text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+        Screen.blit(timer_text, text_rect)
+        pygame.display.update()
+
+        # Verificar si el tiempo ha llegado a 0
+        if time_remaining <= 0:
+
+            # Mostrar "Game Over"
+            game_over_text = font.render("Game Over", True, (255, 0, 0))
+            game_over_text_rect = game_over_text.get_rect(center=(Screen.get_width() // 2, Screen.get_height() // 2))
+            Screen.blit(game_over_text, game_over_text_rect)
+
+            # Dibujar un botón "Back"
+            back_button_rect = pygame.Rect(Screen.get_width() // 2 - 50, game_over_text_rect.bottom + 20, 100, 40)
+            pygame.draw.rect(Screen, (0, 255, 0), back_button_rect)
+            back_button_text = font.render("Back", True, (255, 255, 255))
+            back_button_text_rect = back_button_text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
+            Screen.blit(back_button_text, back_button_text_rect)
+
+            # Manejar eventos de clic en el botón de retorno
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONDOWN and back_button_rect.collidepoint(event.pos):
+                    exec(open("./main.py", "r").read(), globals()) 
+                    pygame.display.update()
+                    pygame.quit()
+                    sys.exit()
+
+
         pygame.display.update()
         MyClock.tick(60)
