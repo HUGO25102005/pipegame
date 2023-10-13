@@ -163,6 +163,7 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
         obj8.clickable = False
         obj9.clickable = False
         
+    if game_over:
         # Mostrar un mensaje de victoria
         font = pygame.font.Font(None, 36)
         text = font.render("You Won", True, (255, 0, 0))
@@ -309,21 +310,34 @@ if __name__ == "__main__":
             game_over_text_rect = game_over_text.get_rect(center=(Screen.get_width() // 2, Screen.get_height() // 2))
             Screen.blit(game_over_text, game_over_text_rect)
 
+            # Dibujar un botón "Reset"
+            reset_button_rect = pygame.Rect(Screen.get_width() // 2 - 50, game_over_text_rect.bottom + 20, 100, 40)
+            pygame.draw.rect(Screen, (0, 255, 0), reset_button_rect)
+            reset_button_text = font.render("Reset", True, (255, 255, 255))
+            reset_button_text_rect = reset_button_text.get_rect(center=(reset_button_rect.centerx, reset_button_rect.centery))
+            Screen.blit(reset_button_text, reset_button_text_rect)
+
             # Dibujar un botón "Back"
-            back_button_rect = pygame.Rect(Screen.get_width() // 2 - 50, game_over_text_rect.bottom + 20, 100, 40)
+            back_button_rect = pygame.Rect(Screen.get_width() // 2 - 50, reset_button_rect.bottom + 10, 100, 40)
             pygame.draw.rect(Screen, (0, 255, 0), back_button_rect)
             back_button_text = font.render("Back", True, (255, 255, 255))
             back_button_text_rect = back_button_text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
             Screen.blit(back_button_text, back_button_text_rect)
 
-            # Manejar eventos de clic en el botón de retorno
+            
+        # Manejar eventos de clic en el botón de retorno
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and back_button_rect.collidepoint(event.pos):
+                    # Código para volver al menú principal
                     exec(open("./main.py", "r").read(), globals()) 
                     pygame.display.update()
                     pygame.quit()
                     sys.exit()
-
+                if event.type == pygame.MOUSEBUTTONDOWN and reset_button_rect.collidepoint(event.pos):
+                    exec(open("./pipegame.py", "r").read(), globals()) 
+                    pygame.display.update()
+                    pygame.quit()
+                    sys.exit()
 
         pygame.display.update()
         MyClock.tick(60)
