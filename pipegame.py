@@ -15,7 +15,7 @@ game_over = False
 INITIAL_TIME = 30
 
 # Crear un objeto de fuente para el temporizador
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 120)
 
 # Obtener la resolución de la pantalla del usuario
 info = pygame.display.Info()
@@ -165,15 +165,15 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
         
     if game_over:
         # Mostrar un mensaje de victoria
-        font = pygame.font.Font(None, 36)
-        text = font.render("You Won", True, (255, 0, 0))
+        font = pygame.font.Font(None, 120)
+        text = font.render("You Won!", True, (255, 0, 0))
         text_rect = text.get_rect(center=(Surface.get_width() // 2, Surface.get_height() // 2))
         Surface.blit(text, text_rect)
         
         # Dibujar un botón de retorno
         back_button_rect = pygame.Rect(Surface.get_width() // 2 - 50, text_rect.bottom + 20, 100, 40)
-        pygame.draw.rect(Surface, (0, 255, 0), back_button_rect)
-        font = pygame.font.Font(None, 24)
+        #pygame.draw.rect(Surface, (0, 255, 0), back_button_rect)
+        font = pygame.font.Font(None, 120)
         text = font.render("Back", True, (255, 255, 255))
         text_rect = text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
         Surface.blit(text, text_rect)
@@ -311,15 +311,15 @@ if __name__ == "__main__":
             Screen.blit(game_over_text, game_over_text_rect)
 
             # Dibujar un botón "Reset"
-            reset_button_rect = pygame.Rect(Screen.get_width() // 2 - 50, game_over_text_rect.bottom + 20, 100, 40)
-            pygame.draw.rect(Screen, (0, 255, 0), reset_button_rect)
+            reset_button_rect = pygame.Rect(Screen.get_width() // 2 - 80, game_over_text_rect.bottom + 20, 100, 40)
+            #pygame.draw.rect(Screen, (0, 255, 0), reset_button_rect)
             reset_button_text = font.render("Reset", True, (255, 255, 255))
             reset_button_text_rect = reset_button_text.get_rect(center=(reset_button_rect.centerx, reset_button_rect.centery))
             Screen.blit(reset_button_text, reset_button_text_rect)
 
             # Dibujar un botón "Back"
-            back_button_rect = pygame.Rect(Screen.get_width() // 2 - 50, reset_button_rect.bottom + 10, 100, 40)
-            pygame.draw.rect(Screen, (0, 255, 0), back_button_rect)
+            back_button_rect = pygame.Rect(Screen.get_width() // 2 - 80, reset_button_rect.bottom + 20, 100, 40)
+            #pygame.draw.rect(Screen, (0, 255, 0), back_button_rect)
             back_button_text = font.render("Back", True, (255, 255, 255))
             back_button_text_rect = back_button_text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
             Screen.blit(back_button_text, back_button_text_rect)
