@@ -1,7 +1,7 @@
 #Short Circuit
 
 #Importación de módulos necesarios
-import os,sys
+import os,sys,time
 import pygame
     
 # Definición de constantes
@@ -11,8 +11,9 @@ CELL_SIZE = 68
 #Detectar si el juego ha terminado
 game_over = False
 
-# Definir el tiempo inicial en segundos
-INITIAL_TIME = 30
+tiempo_inicial = time.time()
+duracion_temporizador = 30
+tiempo_final = tiempo_inicial + duracion_temporizador
 
 # Crear un objeto de fuente para el temporizador
 font = pygame.font.Font(None, 120)
@@ -247,13 +248,6 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
 
 # Función principal del programa
 if __name__ == "__main__":
-    # Crear un reloj para contar el tiempo
-    timer = pygame.time.Clock()
-    
-    start_time = pygame.time.get_ticks()  # Registra el tiempo de inicio del juego en milisegundos
-
-    time_remaining = INITIAL_TIME  # Tiempo inicial en segundos
-
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     pygame.init()
     Screen.blit(BG, (0, 0)) # Dibuja la imagen de fondo en la pantalla
@@ -274,58 +268,46 @@ if __name__ == "__main__":
     obj5.image = pygame.image.load("./assets/topright_block.png")
 
     while 1:
-        # Obtén el tiempo transcurrido desde el inicio del juego en milisegundos
-        current_time = pygame.time.get_ticks()
-        
-        # Calcula el tiempo restante en segundos restando el tiempo transcurrido
-        time_remaining = max(INITIAL_TIME - (current_time - start_time) / 1000, 0)
-        # Renderizar el texto del temporizador
-        timer_text = font.render(f"Time: {max(int(time_remaining), 0)}", True, (255, 0, 0))
-
         main(Screen,obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9,obj10,obj11)
-        
-        if not game_over:
-            # Actualiza y dibuja el texto del temporizador
-            timer_text = font.render(f"Time: {max(int(time_remaining), 0)}", True, (255, 0, 0))
-            text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
-            Screen.blit(timer_text, text_rect)
-    
-        # Verificar si el tiempo ha llegado a 0
-        if time_remaining <= 0 and not game_over:
+        tiempo_restante = int(tiempo_final - time.time())
+        texto = font.render("Tiempo restante: {} segundos".format(tiempo_restante), True, (0, 0, 0))
+        Screen.blit(texto, (50, 50))
+        for evento in pygame.event.get():
+            if tiempo_restante == 0 and not game_over:
+                # Manejar el evento de liberación del mouse para detener el arrastre
+                obj.click = False
+                obj2.click = False
+                obj3.click = False
+                obj4.click = False
+                obj5.click = False
+                obj6.click = False
+                obj7.click = False
+                obj8.click = False
+                obj9.click = False
+                mouse_release()
+             
 
-            # Manejar el evento de liberación del mouse para detener el arrastre
-            obj.click = False
-            obj2.click = False
-            obj3.click = False
-            obj4.click = False
-            obj5.click = False
-            obj6.click = False
-            obj7.click = False
-            obj8.click = False
-            obj9.click = False
-            mouse_release()
+                # Mostrar "Game Over"
+                game_over_text = font.render("Game Over", True, (255, 0, 0))
+                game_over_text_rect = game_over_text.get_rect(center=(Screen.get_width() // 2, Screen.get_height() // 2))
+                Screen.blit(game_over_text, game_over_text_rect)
 
-            # Mostrar "Game Over"
-            game_over_text = font.render("Game Over", True, (255, 0, 0))
-            game_over_text_rect = game_over_text.get_rect(center=(Screen.get_width() // 2, Screen.get_height() // 2))
-            Screen.blit(game_over_text, game_over_text_rect)
+                # Dibujar un botón "Reset"
+                reset_button_rect = pygame.Rect(Screen.get_width() // 2 - 80, game_over_text_rect.bottom + 20, 100, 40)
+                #pygame.draw.rect(Screen, (0, 255, 0), reset_button_rect)
+                reset_button_text = font.render("Reset", True, (255, 255, 255))
+                reset_button_text_rect = reset_button_text.get_rect(center=(reset_button_rect.centerx, reset_button_rect.centery))
+                Screen.blit(reset_button_text, reset_button_text_rect)
 
-            # Dibujar un botón "Reset"
-            reset_button_rect = pygame.Rect(Screen.get_width() // 2 - 80, game_over_text_rect.bottom + 20, 100, 40)
-            #pygame.draw.rect(Screen, (0, 255, 0), reset_button_rect)
-            reset_button_text = font.render("Reset", True, (255, 255, 255))
-            reset_button_text_rect = reset_button_text.get_rect(center=(reset_button_rect.centerx, reset_button_rect.centery))
-            Screen.blit(reset_button_text, reset_button_text_rect)
-
-            # Dibujar un botón "Back"
-            back_button_rect = pygame.Rect(Screen.get_width() // 2 - 80, reset_button_rect.bottom + 20, 100, 40)
-            #pygame.draw.rect(Screen, (0, 255, 0), back_button_rect)
-            back_button_text = font.render("Back", True, (255, 255, 255))
-            back_button_text_rect = back_button_text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
-            Screen.blit(back_button_text, back_button_text_rect)
+                # Dibujar un botón "Back"
+                back_button_rect = pygame.Rect(Screen.get_width() // 2 - 80, reset_button_rect.bottom + 20, 100, 40)
+                #pygame.draw.rect(Screen, (0, 255, 0), back_button_rect)
+                back_button_text = font.render("Back", True, (255, 255, 255))
+                back_button_text_rect = back_button_text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
+                Screen.blit(back_button_text, back_button_text_rect)
 
             
-        # Manejar eventos de clic en el botón de retorno
+            # Manejar eventos de clic en el botón de retorno
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and back_button_rect.collidepoint(event.pos):
                     # Código para volver al menú principal
@@ -339,5 +321,11 @@ if __name__ == "__main__":
                     pygame.quit()
                     sys.exit()
 
+
+        
+
+       
+
         pygame.display.update()
+        time.sleep(1)
         MyClock.tick(60)
