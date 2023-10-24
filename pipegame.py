@@ -3,6 +3,8 @@
 #Importación de módulos necesarios
 import os,sys,time
 import pygame
+
+pygame.init()
     
 # Definición de constantes
 NUM_CELLS = 6
