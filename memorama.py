@@ -30,6 +30,7 @@ acomodo = [
     [cuadro("imagenes/im1.png"), cuadro("imagenes/im1.png"), cuadro("imagenes/im2.png"), cuadro("imagenes/im2.png")]
     [cuadro("imagenes/panel_solar.png"), cuadro("imagenes/panel_solar.png"), cuadro("imagenes/sol.png"), cuadro("imagenes/sol.png")]
 ]
+imagen_oculta = ("imagenes/pregunta.png")
 #COLORES.............................................................................................
 color_blanco = (255,255,255)
 color_negro = (0,0,0,0)
@@ -40,8 +41,8 @@ color_azul = (30,136,229)
 sonido_fondo = pygame.mixer.sound() #falta agreagr sonidos
 sonido_exito = pygame.mixer.sound()
 sonido_clic = pygame.mixer.sound()
-sonido_fondo = pygame.mixer.sound()
-sonido_fondo = pygame.mixer.sound()
+sonido_voltear = pygame.mixer.sound()
+sonido_ = pygame.mixer.sound()
 
 #TAMAÑO DE PANTALLA ..............................................
 anchura_pantalla = len(acomodo[0]) * medida_cuadro
@@ -112,8 +113,74 @@ def iniciar_juego():
 
     for i in range(3):
         aleatorizar_cuadros()
-        ocultar_todas_las_cartas()
-        juego_iniciado = True
+    ocultar_todas_las_cartas()
+    juego_iniciado = True
 
 #INICIA PANTALLA......................................
-                   
+
+# creamos la pantalla
+pantalla_juego = pygame.display.set_mode((anchura_pantalla , altura_pantalla))
+pygame.display.set_caption("Memorama de las energias renovables")
+pygame.mixer.Sound.play(sonido_fondo, -1)  #falta sonido de fondo, el -1 es el ciclo infinito
+
+while True:
+
+    for event in pygame.event.get():#detenta el click del mouse
+        if event.type == pygame.QUIT:
+            sys.exit()
+        elif event.type == pygame.MOUSEBUTTONDOWN and puede_jugar:       
+            xAbsoluto, yAbsoluto = event.pos
+            if boton.collidepoint(event.pos):
+                iniciar_juego()
+            else:
+                if not juego_iniciado:
+                    continue
+
+            x = math.floor(xAbsoluto / medida_cuadro)
+            y = math.flor(yAbsoluto / medida_cuadro)
+            cuadro = acomodo[y][x]
+            if cuadro.mostrar or cuadro.descubierto:
+                continue
+            if x1 is None and y1 is None:
+
+                x1 = x
+                y1 = y
+                acomodo[y1][x1].mostrar = True
+                pygame.mixer.Sound.play(sonido_voltear)   
+            else:
+                x2 = x
+                y2 = y
+                acomodo[y2][x2].mostrar = True
+                
+
+
+x = 0
+y = 0
+# Recorrer los cuadros
+for fila in acomodo:
+    x = 0
+    for cuadro in fila:
+        """
+        Si está descubierto o se debe mostrar, dibujamos la imagen real. Si no,
+        dibujamos la imagen oculta
+        """
+        if cuadro.descubierto or cuadro.mostrar:
+            pantalla_juego.blit(cuadro.imagen_real, (x, y))
+        else:
+            pantalla_juego.blit(imagen_oculta, (x, y))
+        x += medida_cuadro
+    y += medida_cuadro
+
+# También dibujamos el botón
+if juego_iniciado:
+    # Si está iniciado, entonces botón blanco con fuente gris para que parezca deshabilitado
+    pygame.draw.rect(pantalla_juego, color_blanco, boton)
+    pantalla_juego.blit(fuente.render(
+        "Iniciar juego", True, color_gris), (xFuente, yFuente))
+else:
+    pygame.draw.rect(pantalla_juego, color_azul, boton)
+    pantalla_juego.blit(fuente.render(
+        "Iniciar juego", True, color_blanco), (xFuente, yFuente))
+
+# Actualizamos la pantalla
+pygame.display.update()
