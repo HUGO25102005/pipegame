@@ -168,14 +168,88 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
         obj9.clickable = False
         
     if game_over:
+        BG1 = pygame.image.load("assets/background_2.png")
+        BG1 = pygame.transform.scale(BG1, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        Screen.blit(BG1, (0, 0))
+
+        three_stars = False
+        two_stars = False
+        one_star = False
+
         # Mostrar un mensaje de victoria
         font = pygame.font.Font(None, 120)
         text = font.render("You Won!", True, (255, 0, 0))
-        text_rect = text.get_rect(center=(Surface.get_width() // 2, Surface.get_height() // 2))
+        text_rect = text.get_rect(center=(Surface.get_width() // 2, Surface.get_height() // 5))
         Surface.blit(text, text_rect)
+
+        # Dibujar estrella central
+        frs_star_b = pygame.image.load("assets/starb.png")
+        frs_star_b = pygame.transform.scale(frs_star_b, (200,200))
+        frs_star_b_rect = frs_star_b.get_rect(center=(Surface.get_width() // 2, Surface.get_height() // 3))
+        Surface.blit(frs_star_b, frs_star_b_rect)
+        
+        # Posicionar segunda estrella a la izquierda de la primera
+        snd_star_b_rect = pygame.Rect(frs_star_b_rect.left - frs_star_b_rect.width, frs_star_b_rect.top + 20, 100, 40)
+        snd_star_b = pygame.image.load("assets/starb.png")
+        snd_star_b = pygame.transform.scale(snd_star_b, (200,200))
+        Surface.blit(snd_star_b, snd_star_b_rect)
+
+        # Posicionar segunda estrella a la izquierda de la primera
+        trd_star_b_rect = pygame.Rect(frs_star_b_rect.right - frs_star_b_rect.width + 200, frs_star_b_rect.top + 20, 100, 40)
+        trd_star_b = pygame.image.load("assets/starb.png")
+        trd_star_b = pygame.transform.scale(trd_star_b, (200,200))
+        Surface.blit(trd_star_b, trd_star_b_rect)
+
+        if tiempo_restante >= 20:
+            three_stars = True
+         
+        if tiempo_restante >= 10 and tiempo_restante <= 20:
+            two_stars = True
+
+        if tiempo_restante < 10:
+            one_star = True
+
+        if three_stars:
+            # Dibujar estrella central
+            frs_star = pygame.image.load("assets/star.png")
+            frs_star = pygame.transform.scale(frs_star, (200,200))
+            frs_star_rect = frs_star.get_rect(center=(Surface.get_width() // 2, Surface.get_height() // 3))
+            Surface.blit(frs_star, frs_star_rect)
+        
+            # Posicionar segunda estrella a la izquierda de la primera
+            snd_star_rect = pygame.Rect(frs_star_rect.left - frs_star_rect.width, frs_star_rect.top + 20, 100, 40)
+            snd_star = pygame.image.load("assets/star.png")
+            snd_star = pygame.transform.scale(snd_star, (200,200))
+            Surface.blit(snd_star, snd_star_rect)
+
+            # Posicionar segunda estrella a la izquierda de la primera
+            trd_star_rect = pygame.Rect(frs_star_rect.right - frs_star_rect.width + 200, frs_star_rect.top + 20, 100, 40)
+            trd_star = pygame.image.load("assets/star.png")
+            trd_star = pygame.transform.scale(trd_star, (200,200))
+            Surface.blit(trd_star, trd_star_rect)
+
+        if two_stars:
+            # Dibujar estrella central
+            frs_star = pygame.image.load("assets/star.png")
+            frs_star = pygame.transform.scale(frs_star, (200,200))
+            frs_star_rect = frs_star.get_rect(center=(Surface.get_width() // 2, Surface.get_height() // 3))
+            Surface.blit(frs_star, frs_star_rect)
+        
+            # Posicionar segunda estrella a la izquierda de la primera
+            snd_star_rect = pygame.Rect(frs_star_rect.left - frs_star_rect.width, frs_star_rect.top + 20, 100, 40)
+            snd_star = pygame.image.load("assets/star.png")
+            snd_star = pygame.transform.scale(snd_star, (200,200))
+            Surface.blit(snd_star, snd_star_rect)
+
+        if one_star:
+            # Dibujar estrella central
+            frs_star = pygame.image.load("assets/star.png")
+            frs_star = pygame.transform.scale(frs_star, (200,200))
+            frs_star_rect = frs_star.get_rect(center=(Surface.get_width() // 2, Surface.get_height() // 3))
+            Surface.blit(frs_star, frs_star_rect)
         
         # Dibujar un botón de retorno
-        back_button_rect = pygame.Rect(Surface.get_width() // 2 - 50, text_rect.bottom + 20, 100, 40)
+        back_button_rect = pygame.Rect(Surface.get_width() // 2 - 50, text_rect.bottom + 400, 100, 40)
         #pygame.draw.rect(Surface, (0, 255, 0), back_button_rect)
         font = pygame.font.Font(None, 120)
         text = font.render("Back", True, (255, 255, 255))
@@ -270,10 +344,8 @@ if __name__ == "__main__":
     obj5.image = pygame.image.load("./assets/topright_block.png")
 
     while 1:
-        # Actualiza la pantalla
-        pygame.display.update()
-
-        tiempo_restante = int(tiempo_final - time.time())
+        if not game_over:
+            tiempo_restante = int(tiempo_final - time.time())
 
         main(Screen,obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9,obj10,obj11)
         
@@ -323,13 +395,12 @@ if __name__ == "__main__":
                 if event.type == pygame.MOUSEBUTTONDOWN and back_button_rect.collidepoint(event.pos):
                     # Código para volver al menú principal
                     exec(open("./main.py", "r").read(), globals()) 
-                    pygame.display.update()
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN and reset_button_rect.collidepoint(event.pos):
                     exec(open("./pipegame.py", "r").read(), globals()) 
-                    pygame.display.update()
                     pygame.quit()
                     sys.exit()
-
+        
+        pygame.display.update()
         MyClock.tick(30)
