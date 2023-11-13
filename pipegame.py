@@ -265,7 +265,7 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
                 pygame.quit()
                 sys.exit()
 
-    pygame.display.update()
+    #pygame.display.update()
 
 def mouse_release():
     pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONUP, button=pygame.BUTTON_LEFT))
