@@ -15,8 +15,11 @@ game_over = False
 
 #Inicializar el cronometro
 tiempo_inicial = time.time()
-duracion_temporizador = 30
+duracion_temporizador = 60
 tiempo_final = tiempo_inicial + duracion_temporizador
+
+# Set initial background
+current_background = 0
 
 # Crear un objeto de fuente para el temporizador
 font = pygame.font.Font(None, 120)
@@ -31,8 +34,8 @@ TABLE_WIDTH = NUM_CELLS * CELL_SIZE
 TABLE_HEIGHT = NUM_CELLS * CELL_SIZE
 
 # Calcula la posición inicial para centrar la tabla en la pantalla
-TABLE_X = 0
-TABLE_Y = 0
+TABLE_X = (SCREEN_WIDTH - TABLE_WIDTH) // 2 - 8
+TABLE_Y = (SCREEN_HEIGHT - TABLE_HEIGHT) // 2 + 4
 
 # Configuración de la ventana principal
 Screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
@@ -168,9 +171,28 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
         obj9.clickable = False
         
     if game_over:
-        BG1 = pygame.image.load("assets/background_2.png")
-        BG1 = pygame.transform.scale(BG1, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        global current_background
+
+        # Load background images or create surfaces for animation
+        background_images = [
+        pygame.image.load("assets/image.png"),
+        pygame.image.load("assets/image-2.png"),
+        pygame.image.load("assets/image-3.png"),
+        pygame.image.load("assets/image-4.png"),
+        pygame.image.load("assets/image-5.png"),
+        pygame.image.load("assets/image-6.png"),
+        pygame.image.load("assets/image-7.png"),
+        pygame.image.load("assets/image-8.png"),
+        ]
+
+        current_background = (current_background + 1) % len(background_images)
+        
+        BG1 = pygame.transform.scale(background_images[current_background], (SCREEN_WIDTH, SCREEN_HEIGHT))
         Screen.blit(BG1, (0, 0))
+
+        BG2 = pygame.image.load("assets/background_2.png")
+        BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        Screen.blit(BG2, (0, 0))
 
         three_stars = False
         two_stars = False
@@ -200,13 +222,13 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
         trd_star_b = pygame.transform.scale(trd_star_b, (200,200))
         Surface.blit(trd_star_b, trd_star_b_rect)
 
-        if tiempo_restante >= 20:
+        if tiempo_restante >= 40:
             three_stars = True
          
-        if tiempo_restante >= 10 and tiempo_restante <= 20:
+        if tiempo_restante >= 20 and tiempo_restante < 40:
             two_stars = True
 
-        if tiempo_restante < 10:
+        if tiempo_restante < 20:
             one_star = True
 
         if three_stars:
@@ -249,13 +271,10 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
             Surface.blit(frs_star, frs_star_rect)
         
         # Dibujar un botón de retorno
-        back_button_rect = pygame.Rect(Surface.get_width() // 2 - 50, text_rect.bottom + 400, 100, 40)
-        #pygame.draw.rect(Surface, (0, 255, 0), back_button_rect)
-        font = pygame.font.Font(None, 120)
-        text = font.render("Back", True, (255, 255, 255))
-        text_rect = text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
-        Surface.blit(text, text_rect)
-
+        back_button_text = font.render("Back", True, (255, 255, 255))
+        back_button_text_rect = back_button_text.get_rect(center=(Surface.get_width() // 2, text_rect.bottom + 450))
+        back_button_rect = back_button_text_rect.inflate(10, 10)  
+        Surface.blit(back_button_text, back_button_text_rect)
         
         # Manejar eventos de clic en el botón de retorno
         for event in pygame.event.get():
@@ -313,11 +332,11 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
                     move_obj.rect.centery = move_obj.original_cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
 
             # Verificar y corregir la posición de los objetos si están fuera de los límites
-            for move_obj in [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]:
-                move_obj.rect.centerx = max(CELL_SIZE // 2, move_obj.rect.centerx)
-                move_obj.rect.centerx = min(TABLE_WIDTH - CELL_SIZE // 2, move_obj.rect.centerx)
-                move_obj.rect.centery = max(CELL_SIZE // 2, move_obj.rect.centery)
-                move_obj.rect.centery = min(TABLE_HEIGHT - CELL_SIZE // 2, move_obj.rect.centery)
+            #for move_obj in [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]:
+                #move_obj.rect.centerx = max(CELL_SIZE // 2, move_obj.rect.centerx)
+                #move_obj.rect.centerx = min(TABLE_WIDTH - CELL_SIZE // 2, move_obj.rect.centerx)
+                #move_obj.rect.centery = max(CELL_SIZE // 2, move_obj.rect.centery)
+                #move_obj.rect.centery = min(TABLE_HEIGHT - CELL_SIZE // 2, move_obj.rect.centery)
 
         elif event.type == pygame.QUIT:
             pygame.quit()
@@ -328,17 +347,17 @@ if __name__ == "__main__":
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     Screen.blit(BG, (0, 0)) # Dibuja la imagen de fondo en la pantalla
     MyClock = pygame.time.Clock()
-    obj = Object((CELL_SIZE * 1, CELL_SIZE * 1, CELL_SIZE, CELL_SIZE), (1, 1))  
-    obj2 = Object((CELL_SIZE * 2, CELL_SIZE * 2, CELL_SIZE, CELL_SIZE), (2, 2))
-    obj3 = Object((CELL_SIZE * 4, CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (4, 4)) 
-    obj4 = Object((CELL_SIZE * 2, CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (2, 3))
-    obj5 = Object((CELL_SIZE * 3, CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (3, 4))
-    obj6 = Object((CELL_SIZE * 1, CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (1, 3))  
-    obj7 = Object((CELL_SIZE * 3, CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (3, 5))
-    obj8 = Object((CELL_SIZE * 4, CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (4, 3)) 
-    obj9 = Object((CELL_SIZE * 2, CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (2, 5))
-    obj10 = Object((CELL_SIZE * 0, CELL_SIZE * 0, CELL_SIZE, CELL_SIZE), (0, 0))
-    obj11 = Object((CELL_SIZE * 5, CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (5, 5))
+    obj = Object((TABLE_X + CELL_SIZE * 1, TABLE_Y + CELL_SIZE * 1, CELL_SIZE, CELL_SIZE), (1, 1))
+    obj2 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 2, CELL_SIZE, CELL_SIZE), (2, 2))
+    obj3 = Object((TABLE_X + CELL_SIZE * 4, TABLE_Y + CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (4, 4))
+    obj4 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (2, 3))
+    obj5 = Object((TABLE_X + CELL_SIZE * 3, TABLE_Y + CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (3, 4))
+    obj6 = Object((TABLE_X + CELL_SIZE * 1, TABLE_Y + CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (1, 3))
+    obj7 = Object((TABLE_X + CELL_SIZE * 3, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (3, 5))
+    obj8 = Object((TABLE_X + CELL_SIZE * 4, TABLE_Y + CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (4, 3))
+    obj9 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (2, 5))
+    obj10 = Object((TABLE_X + CELL_SIZE * 0, TABLE_Y + CELL_SIZE * 0, CELL_SIZE, CELL_SIZE), (0, 0))
+    obj11 = Object((TABLE_X + CELL_SIZE * 5, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (5, 5))
     obj10.image = pygame.image.load("./assets/fuzebox_start1.png")
     obj11.image = pygame.image.load("./assets/fuzebox_end1.png")
     obj5.image = pygame.image.load("./assets/topright_block.png")
@@ -369,28 +388,52 @@ if __name__ == "__main__":
             obj8.click = False
             obj9.click = False
             mouse_release()
+            
+            BG1 = pygame.image.load("assets/image-1.png")
+            BG1 = pygame.transform.scale(BG1, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            Screen.blit(BG1, (0, 0))
+
+            BG2 = pygame.image.load("assets/background_2.png")
+            BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+            Screen.blit(BG2, (0, 0))
 
             # Mostrar "Game Over"
-            game_over_text = font.render("Game Over", True, (255, 0, 0))
-            game_over_text_rect = game_over_text.get_rect(center=(Screen.get_width() // 2, Screen.get_height() // 2))
+            game_over_text = font.render("Game Over!", True, (255, 0, 0))
+            game_over_text_rect = game_over_text.get_rect(center=(Screen.get_width() // 2, Screen.get_height() // 5))
             Screen.blit(game_over_text, game_over_text_rect)
+                        
+            # Dibujar estrella central
+            frs_star_b = pygame.image.load("assets/starb.png")
+            frs_star_b = pygame.transform.scale(frs_star_b, (200,200))
+            frs_star_b_rect = frs_star_b.get_rect(center=(Screen.get_width() // 2, Screen.get_height() // 3))
+            Screen.blit(frs_star_b, frs_star_b_rect)
+        
+            # Posicionar segunda estrella a la izquierda de la primera
+            snd_star_b_rect = pygame.Rect(frs_star_b_rect.left - frs_star_b_rect.width, frs_star_b_rect.top + 20, 100, 40)
+            snd_star_b = pygame.image.load("assets/starb.png")
+            snd_star_b = pygame.transform.scale(snd_star_b, (200,200))
+            Screen.blit(snd_star_b, snd_star_b_rect)
+
+            # Posicionar segunda estrella a la izquierda de la primera
+            trd_star_b_rect = pygame.Rect(frs_star_b_rect.right - frs_star_b_rect.width + 200, frs_star_b_rect.top + 20, 100, 40)
+            trd_star_b = pygame.image.load("assets/starb.png")
+            trd_star_b = pygame.transform.scale(trd_star_b, (200,200))
+            Screen.blit(trd_star_b, trd_star_b_rect)
 
             # Dibujar un botón "Reset"
-            reset_button_rect = pygame.Rect(Screen.get_width() // 2 - 80, game_over_text_rect.bottom + 20, 100, 40)
-            #pygame.draw.rect(Screen, (0, 255, 0), reset_button_rect)
             reset_button_text = font.render("Reset", True, (255, 255, 255))
-            reset_button_text_rect = reset_button_text.get_rect(center=(reset_button_rect.centerx, reset_button_rect.centery))
+            reset_button_text_rect = reset_button_text.get_rect(center=(Screen.get_width() // 2, game_over_text_rect.bottom + 450))
+            reset_button_rect = reset_button_text_rect.inflate(10, 10)
             Screen.blit(reset_button_text, reset_button_text_rect)
 
             # Dibujar un botón "Back"
-            back_button_rect = pygame.Rect(Screen.get_width() // 2 - 80, reset_button_rect.bottom + 20, 100, 40)
-            #pygame.draw.rect(Screen, (0, 255, 0), back_button_rect)
             back_button_text = font.render("Back", True, (255, 255, 255))
-            back_button_text_rect = back_button_text.get_rect(center=(back_button_rect.centerx, back_button_rect.centery))
+            back_button_text_rect = back_button_text.get_rect(center=(Screen.get_width() // 2, game_over_text_rect.bottom + 550))
+            back_button_rect = back_button_text_rect.inflate(10, 10)  
             Screen.blit(back_button_text, back_button_text_rect)
 
             
-        # Manejar eventos de clic en el botón de retorno
+            # Manejar eventos de clic en el botón de retorno
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN and back_button_rect.collidepoint(event.pos):
                     # Código para volver al menú principal
@@ -403,4 +446,4 @@ if __name__ == "__main__":
                     sys.exit()
         
         pygame.display.update()
-        MyClock.tick(30)
+        MyClock.tick(120)
