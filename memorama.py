@@ -43,8 +43,8 @@ color_azul = (30,136,229)
 sonido_fondo = pygame.mixer.Sound('musica/musica_fondo.mp3') #falta agreagr sonidos
 sonido_exito = pygame.mixer.Sound('musica/sonido_exito.mp3')
 sonido_clic = pygame.mixer.Sound('musica/clic.mp3')
-sonido_voltear = pygame.mixer.Sound('musica/falla.mp3')
-sonido_fracaso = pygame.mixer.Sound('musica/hoja.mp3')
+sonido_voltear = pygame.mixer.Sound('musica/hoja.mp3')
+sonido_fracaso = pygame.mixer.Sound('musica/falla.mp3')
 
 #TAMAÑO DE PANTALLA ..............................................
 anchura_pantalla = len(cuadros[0]) * medida_cuadro
