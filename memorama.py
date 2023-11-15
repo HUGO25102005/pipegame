@@ -4,6 +4,7 @@ import sys
 import math
 import time
 import random
+import os
 #iniciamos pygame
 pygame.init()
 pygame.font.init()
@@ -11,10 +12,13 @@ pygame.mixer.init()
 
 #VARIABLES ...........................................................................
 altura_boton = 30   #para iniciar el juego (tamaño)
-medida_cuadro = 190  #tamaño de la imagen
+medida_cuadro = 260  #tamaño de la imagen
 nombre_imagen_oculta = "imagenes/pregunta1.png" #imagen de la tarjeta volteada
 imagen_volteada = pygame.image.load(nombre_imagen_oculta)
 mostrar_piezas = 2 #para ocultar las tarjetas.
+info = pygame.display.Info()
+SCREEN_WIDTH = info.current_w
+SCREEN_HEIGHT = info.current_h
 
 
 class cuadro:
@@ -48,17 +52,16 @@ sonido_fracaso = pygame.mixer.Sound('musica/falla.mp3')
 
 #TAMAÑO DE PANTALLA ..............................................
 anchura_pantalla = len(cuadros[0]) * medida_cuadro
-altura_pantalla = (len(cuadros * medida_cuadro)) + altura_boton
-anchura_boton = anchura_pantalla
+anchura_boton = SCREEN_WIDTH
+altura_boton = SCREEN_HEIGHT // 20
 #FUENTE DEL BOTON.................................................
 tamanio_fuente = 20
 fuente = pygame.font.SysFont("Arial", tamanio_fuente)
-xFuente = int((anchura_boton/2)-(tamanio_fuente/2))
-yFuente = int((altura_pantalla - altura_boton))
+xFuente = int((anchura_boton/2.2)-(tamanio_fuente/2))
+yFuente = int((SCREEN_HEIGHT - altura_boton/2))
 
 #BOTON...............................................................
-boton = pygame.Rect(0, altura_pantalla-altura_boton,
-                    anchura_boton, altura_pantalla)
+boton = pygame.Rect(0, SCREEN_HEIGHT - altura_boton, anchura_boton, altura_boton)
 
 #OCULTAR LAS TARJETAS.................................................
 
@@ -120,7 +123,8 @@ def iniciar_juego():
 
 #INICIA PANTALLA.......................................................
 # creamos la pantalla
-pantalla_juego = pygame.display.set_mode((anchura_pantalla , altura_pantalla))
+os.environ['SDL_VIDEO_CENTERED'] = '1'
+pantalla_juego = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption('Memorama de las energias renovables')
 pygame.mixer.Sound.play(sonido_fondo, -1)  
 while True:
@@ -133,10 +137,10 @@ while True:
                 if not juego_iniciado:
                     iniciar_juego()
             else:
-                if not juego_iniciado:#voltea las imagenes
+                if not juego_iniciado:
                     continue
-                x = math.floor(xAbsoluto / medida_cuadro)
-                y = math.floor(yAbsoluto / medida_cuadro)
+                x = math.floor((xAbsoluto - start_x) / medida_cuadro)
+                y = math.floor((yAbsoluto - start_y) / medida_cuadro)
                 cuadro = cuadros[y][x]
                 if cuadro.mostrar or cuadro.descubierto:
                     continue
@@ -179,16 +183,19 @@ while True:
         puede_jugar = True
     pantalla_juego.fill(color_blanco)
 
-    x = 0
-    y = 0
+    start_x = (SCREEN_WIDTH - len(cuadros[0]) * medida_cuadro) // 2
+    start_y = (SCREEN_HEIGHT - len(cuadros) * medida_cuadro) // 2
+
+    x = start_x
+    y = start_y
 
     for fila in cuadros:
-        x = 0
+        x = start_x
         for cuadro in fila:
             if cuadro.descubierto or cuadro.mostrar:
                 pantalla_juego.blit(cuadro.imagen_real, (x, y))
             else:       
-                pantalla_juego.blit(imagen_volteada,  (x, y))
+                pantalla_juego.blit(imagen_volteada, (x, y))
             x += medida_cuadro
         y += medida_cuadro
 
