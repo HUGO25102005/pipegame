@@ -98,6 +98,16 @@ def update_obj9(Surface):
     Surface.blit(obj9.image,obj9.rect)
     obj9.alpha = 255
 
+def objects_in_same_cell(obj1, obj2):
+    return obj1.cell_pos == obj2.cell_pos
+
+# Function to draw a red.png image on top of a cell
+def draw_red_image(surface, cell_position):
+    red_image = pygame.image.load("assets/red.png")
+    red_image = pygame.transform.scale(red_image, (CELL_SIZE, CELL_SIZE))  # Scale the red image to the cell size
+    red_rect = red_image.get_rect(topleft=(cell_position[0] * CELL_SIZE, cell_position[1] * CELL_SIZE))
+    surface.blit(red_image, red_rect)
+
 # Definición de un botón de retorno
 back_button = pygame.Rect(10, 500, 100, 40)
 
@@ -113,6 +123,15 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
                 white_rect = pygame.Rect(TABLE_X + x * CELL_SIZE, TABLE_Y + y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
                 pygame.draw.rect(Surface, (255, 255, 255), white_rect)
 
+    for x in range(NUM_CELLS):
+        for y in range(NUM_CELLS):
+            cell_position = (x, y)
+            objects_in_cell = [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]
+            objects_in_cell = [obj for obj in objects_in_cell if obj.cell_pos == cell_position]
+        
+            if len(objects_in_cell) > 1:
+                draw_red_image(Screen, cell_position)
+
      # Dibujar líneas de cuadrícula
     for i in range(NUM_CELLS + 1):
         # Dibuja líneas horizontales centradas en la tabla
@@ -121,6 +140,8 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
         pygame.draw.line(Surface, (0, 0, 0), (TABLE_X + i * CELL_SIZE, TABLE_Y), (TABLE_X + i * CELL_SIZE, TABLE_Y + TABLE_HEIGHT))  
 
     # Actualizar y dibujar objetos en la superficie
+    obj10.update(Surface)
+    obj11.update(Surface)
     obj.update(Surface)
     obj2.update(Surface)
     obj3.update(Surface)
@@ -130,8 +151,6 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
     obj7.update(Surface)
     obj8.update(Surface)
     obj9.update(Surface)
-    obj10.update(Surface)
-    obj11.update(Surface)
     update_obj2(Surface)
     update_obj3(Surface)
     update_obj4(Surface)
@@ -140,7 +159,20 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
     update_obj7(Surface)
     update_obj8(Surface)
     update_obj9(Surface)
-    
+
+    # Check if two or more objects are in the same cell
+    cell_occupancy = {}
+    for move_obj in [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]:
+        if move_obj.cell_pos in cell_occupancy:
+            cell_occupancy[move_obj.cell_pos].append(move_obj)
+        else:
+            cell_occupancy[move_obj.cell_pos] = [move_obj]
+
+    # Draw red image in front of cells with multiple objects
+    for cell, objects_in_cell in cell_occupancy.items():
+        if len(objects_in_cell) >= 2:
+            draw_red_image(Surface, cell)
+
     # Cargar una nueva imagen y aplicarla a los objetos 6 al 9
     new_image = pygame.image.load("./assets/hori_block.png")
     for obj6_9 in [obj6, obj7, obj8, obj9]:
@@ -148,15 +180,15 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
     
     # Verificar si se ha completado el juego
     if (
-        obj.cell_pos[0] == 0 and 1 <= obj.cell_pos[1] <= 4 and
-        obj2.cell_pos[0] == 0 and 1 <= obj2.cell_pos[1] <= 4 and
-        obj3.cell_pos[0] == 0 and 1 <= obj3.cell_pos[1] <= 4 and
-        obj4.cell_pos[0] == 0 and 1 <= obj4.cell_pos[1] <= 4 and
-        obj5.cell_pos == (0, 5) and
-        1 <= obj6.cell_pos[0] <= 4 and obj6.cell_pos[1] == 5 and
-        1 <= obj7.cell_pos[0] <= 4 and obj7.cell_pos[1] == 5 and
-        1 <= obj8.cell_pos[0] <= 4 and obj8.cell_pos[1] == 5 and
-        1 <= obj9.cell_pos[0] <= 4 and obj9.cell_pos[1] == 5 and
+        obj.cell_pos[0] == 11 and 6 <= obj.cell_pos[1] <= 9 and
+        obj2.cell_pos[0] == 11 and 6 <= obj2.cell_pos[1] <= 9 and
+        obj3.cell_pos[0] == 11 and 6 <= obj3.cell_pos[1] <= 9 and
+        obj4.cell_pos[0] == 11 and 6 <= obj4.cell_pos[1] <= 9 and
+        obj5.cell_pos == (11, 10) and
+        12 <= obj6.cell_pos[0] <= 15 and obj6.cell_pos[1] == 10 and
+        12 <= obj7.cell_pos[0] <= 15 and obj7.cell_pos[1] == 10 and
+        12 <= obj8.cell_pos[0] <= 15 and obj8.cell_pos[1] == 10 and
+        12 <= obj9.cell_pos[0] <= 15 and obj9.cell_pos[1] == 10 and
         pygame.mouse.get_pressed()[0] == False
     ):
         game_over = True
@@ -284,8 +316,6 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
                 pygame.quit()
                 sys.exit()
 
-    #pygame.display.update()
-
 def mouse_release():
     pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONUP, button=pygame.BUTTON_LEFT))
 
@@ -325,18 +355,26 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
             obj8.click = False
             obj9.click = False
 
+            # Verificar y corregir la posición de los objetos si están fuera de los límites
+            for move_obj in [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]:
+                move_obj.rect.centerx = max(TABLE_X + CELL_SIZE // 2, move_obj.rect.centerx)
+                move_obj.rect.centerx = min(TABLE_X + TABLE_WIDTH - CELL_SIZE // 2, move_obj.rect.centerx)
+                move_obj.rect.centery = max(TABLE_Y + CELL_SIZE // 2, move_obj.rect.centery)
+                move_obj.rect.centery = min(TABLE_Y + TABLE_HEIGHT - CELL_SIZE // 2, move_obj.rect.centery)
+
+                # Update the cell position based on the corrected rectangle position
+                move_obj.cell_pos = (move_obj.rect.centerx // CELL_SIZE, move_obj.rect.centery // CELL_SIZE)
+
+
             # **Regresar los objetos a su posición original**
             for move_obj in [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]:
-                if not move_obj.click and move_obj.cell_pos == (0, 0) or move_obj.cell_pos == (5, 5):
+                if not move_obj.click and move_obj.cell_pos == (11, 5) or move_obj.cell_pos == (16, 10):
                     move_obj.rect.centerx = move_obj.original_cell_pos[0] * CELL_SIZE + CELL_SIZE // 2
                     move_obj.rect.centery = move_obj.original_cell_pos[1] * CELL_SIZE + CELL_SIZE // 2
 
-            # Verificar y corregir la posición de los objetos si están fuera de los límites
-            #for move_obj in [obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9]:
-                #move_obj.rect.centerx = max(CELL_SIZE // 2, move_obj.rect.centerx)
-                #move_obj.rect.centerx = min(TABLE_WIDTH - CELL_SIZE // 2, move_obj.rect.centerx)
-                #move_obj.rect.centery = max(CELL_SIZE // 2, move_obj.rect.centery)
-                #move_obj.rect.centery = min(TABLE_HEIGHT - CELL_SIZE // 2, move_obj.rect.centery)
+                    # Update the cell position based on the corrected rectangle position
+                    move_obj.cell_pos = (move_obj.rect.centerx // CELL_SIZE, move_obj.rect.centery // CELL_SIZE)
+
 
         elif event.type == pygame.QUIT:
             pygame.quit()
@@ -347,17 +385,17 @@ if __name__ == "__main__":
     os.environ['SDL_VIDEO_CENTERED'] = '1'
     Screen.blit(BG, (0, 0)) # Dibuja la imagen de fondo en la pantalla
     MyClock = pygame.time.Clock()
-    obj = Object((TABLE_X + CELL_SIZE * 1, TABLE_Y + CELL_SIZE * 1, CELL_SIZE, CELL_SIZE), (1, 1))
-    obj2 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 2, CELL_SIZE, CELL_SIZE), (2, 2))
-    obj3 = Object((TABLE_X + CELL_SIZE * 4, TABLE_Y + CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (4, 4))
-    obj4 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (2, 3))
-    obj5 = Object((TABLE_X + CELL_SIZE * 3, TABLE_Y + CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (3, 4))
-    obj6 = Object((TABLE_X + CELL_SIZE * 1, TABLE_Y + CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (1, 3))
-    obj7 = Object((TABLE_X + CELL_SIZE * 3, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (3, 5))
-    obj8 = Object((TABLE_X + CELL_SIZE * 4, TABLE_Y + CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (4, 3))
-    obj9 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (2, 5))
-    obj10 = Object((TABLE_X + CELL_SIZE * 0, TABLE_Y + CELL_SIZE * 0, CELL_SIZE, CELL_SIZE), (0, 0))
-    obj11 = Object((TABLE_X + CELL_SIZE * 5, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (5, 5))
+    obj = Object((TABLE_X + CELL_SIZE * 1, TABLE_Y + CELL_SIZE * 1, CELL_SIZE, CELL_SIZE), (12, 6))
+    obj2 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 2, CELL_SIZE, CELL_SIZE), (13, 7))
+    obj3 = Object((TABLE_X + CELL_SIZE * 4, TABLE_Y + CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (15,9))
+    obj4 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (13, 8))
+    obj5 = Object((TABLE_X + CELL_SIZE * 3, TABLE_Y + CELL_SIZE * 4, CELL_SIZE, CELL_SIZE), (14, 9))
+    obj6 = Object((TABLE_X + CELL_SIZE * 1, TABLE_Y + CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (12, 8))
+    obj7 = Object((TABLE_X + CELL_SIZE * 3, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (14, 10))
+    obj8 = Object((TABLE_X + CELL_SIZE * 4, TABLE_Y + CELL_SIZE * 3, CELL_SIZE, CELL_SIZE), (15, 8))
+    obj9 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (13, 10))
+    obj10 = Object((TABLE_X + CELL_SIZE * 0, TABLE_Y + CELL_SIZE * 0, CELL_SIZE, CELL_SIZE), (11, 5))
+    obj11 = Object((TABLE_X + CELL_SIZE * 5, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (16, 10))
     obj10.image = pygame.image.load("./assets/fuzebox_start1.png")
     obj11.image = pygame.image.load("./assets/fuzebox_end1.png")
     obj5.image = pygame.image.load("./assets/topright_block.png")
@@ -365,7 +403,7 @@ if __name__ == "__main__":
     while 1:
         if not game_over:
             tiempo_restante = int(tiempo_final - time.time())
-
+            
         main(Screen,obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9,obj10,obj11)
         
         if not game_over and tiempo_restante > 0:
