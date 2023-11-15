@@ -19,6 +19,11 @@ mostrar_piezas = 2 #para ocultar las tarjetas.
 info = pygame.display.Info()
 SCREEN_WIDTH = info.current_w
 SCREEN_HEIGHT = info.current_h
+#Inicializar el cronometro
+tiempo_inicial = time.time()
+duracion_temporizador = 60
+tiempo_final = tiempo_inicial + duracion_temporizador
+font = pygame.font.Font(None, 120)
 
 
 class cuadro:
@@ -128,14 +133,17 @@ pantalla_juego = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.F
 pygame.display.set_caption('Memorama de las energias renovables')
 pygame.mixer.Sound.play(sonido_fondo, -1)  
 while True:
-    for event in pygame.event.get():#detenta el click del mouse
+    tiempo_restante = int(tiempo_final - time.time())
+
+    for event in pygame.event.get():  # detenta el click del mouse
         if event.type == pygame.QUIT:
             sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN and puede_jugar:   
+        elif event.type == pygame.MOUSEBUTTONDOWN and puede_jugar:
             xAbsoluto, yAbsoluto = event.pos
             if boton.collidepoint(event.pos):
                 if not juego_iniciado:
                     iniciar_juego()
+                    tiempo_final = time.time() + duracion_temporizador  # Set the timer only when the game starts
             else:
                 if not juego_iniciado:
                     continue
@@ -149,7 +157,7 @@ while True:
                     x1 = x
                     y1 = y    
                     cuadros[y1][x1].mostrar = True
-                    pygame.mixer.Sound.play(sonido_voltear)   
+                    pygame.mixer.Sound.play(sonido_voltear)
                 else:
                     x2 = x
                     y2 = y
@@ -167,10 +175,9 @@ while True:
                     else:
                         pygame.mixer.Sound.play(sonido_fracaso)
                         ultimos_segundos = int(time.time())
-
-                        puede_jugar = False # Si ya pasaron x segundos, ocultamos las piezas
+                        puede_jugar = False  # Si ya pasaron x segundos, ocultamos las piezas
                 comprobar_si_gana()
-            
+
     ahora = int(time.time())
     if ultimos_segundos != -1 and (ahora - ultimos_segundos) >= segundos_mostrar_pieza:
         cuadros[y1][x1].mostrar = False
@@ -181,6 +188,7 @@ while True:
         y2 = None
         ultimos_segundos = -1
         puede_jugar = True
+
     pantalla_juego.fill(color_blanco)
 
     start_x = (SCREEN_WIDTH - len(cuadros[0]) * medida_cuadro) // 2
@@ -194,15 +202,19 @@ while True:
         for cuadro in fila:
             if cuadro.descubierto or cuadro.mostrar:
                 pantalla_juego.blit(cuadro.imagen_real, (x, y))
-            else:       
+            else:
                 pantalla_juego.blit(imagen_volteada, (x, y))
             x += medida_cuadro
         y += medida_cuadro
 
     if juego_iniciado:
-        
         pygame.draw.rect(pantalla_juego, color_blanco, boton)
         pantalla_juego.blit(fuente.render('INICIAR JUEGO', True, color_gris), (xFuente, yFuente))
+        if tiempo_restante > 0:
+            # Actualiza y dibuja el texto del temporizador
+            timer_text = font.render("Time: {}".format(tiempo_restante), True, (255, 0, 0))
+            text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+            pantalla_juego.blit(timer_text, text_rect)
     else:
         pygame.draw.rect(pantalla_juego, color_azul, boton)
         pantalla_juego.blit(fuente.render('INICIAR JUEGO', True, color_blanco), (xFuente, yFuente))
