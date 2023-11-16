@@ -25,6 +25,10 @@ duracion_temporizador = 60
 tiempo_final = tiempo_inicial + duracion_temporizador
 font = pygame.font.Font(None, 120)
 
+three_stars = False
+two_stars = False
+one_star = False
+
 
 class cuadro:
     def __init__(self, fuente_imagen): #mostrar las imagenes falso no se ve la imagen, verdadero se ve la imagen.
@@ -105,8 +109,7 @@ def aleatorizar_cuadros():
 def comprobar_si_gana():
     if gana():
         pygame.mixer.Sound.play(sonido_exito)
-        reiniciar_juego()
-
+    
 def gana():
     for fila in cuadros:
         for cuadro in fila:
@@ -218,5 +221,96 @@ while True:
     else:
         pygame.draw.rect(pantalla_juego, color_azul, boton)
         pantalla_juego.blit(fuente.render('INICIAR JUEGO', True, color_blanco), (xFuente, yFuente))
+
+    # Draw stars outside the event loop
+    if gana():
+        # Determine stars based on time remaining
+        if tiempo_restante >= 40:
+            three_stars = True
+        elif 20 <= tiempo_restante < 40:
+            two_stars = True
+        elif tiempo_restante < 20:
+            one_star = True
+
+    # Draw stars and victory message outside the event loop
+    if gana():
+
+        # Mostrar un mensaje de victoria
+        font = pygame.font.Font(None, 120)
+        text = font.render("You Won!", True, (255, 0, 0))
+        text_rect = text.get_rect(center=(pantalla_juego.get_width() // 2, pantalla_juego.get_height() // 5))
+        pantalla_juego.blit(text, text_rect)
+
+        # Dibujar estrella central
+        frs_star_b = pygame.image.load("assets/starb.png")
+        frs_star_b = pygame.transform.scale(frs_star_b, (200,200))
+        frs_star_b_rect = frs_star_b.get_rect(center=(pantalla_juego.get_width() // 2, pantalla_juego.get_height() // 3))
+        pantalla_juego.blit(frs_star_b, frs_star_b_rect)
+    
+        # Posicionar segunda estrella a la izquierda de la primera
+        snd_star_b_rect = pygame.Rect(frs_star_b_rect.left - frs_star_b_rect.width, frs_star_b_rect.top + 20, 100, 40)
+        snd_star_b = pygame.image.load("assets/starb.png")
+        snd_star_b = pygame.transform.scale(snd_star_b, (200,200))
+        pantalla_juego.blit(snd_star_b, snd_star_b_rect)
+
+        # Posicionar tercera estrella a la derecha de la primera
+        trd_star_b_rect = pygame.Rect(frs_star_b_rect.right + 20, frs_star_b_rect.top + 20, 100, 40)
+        trd_star_b = pygame.image.load("assets/starb.png")
+        trd_star_b = pygame.transform.scale(trd_star_b, (200,200))
+        pantalla_juego.blit(trd_star_b, trd_star_b_rect)
+
+        if three_stars:
+            # Dibujar estrella central
+            frs_star = pygame.image.load("assets/star.png")
+            frs_star = pygame.transform.scale(frs_star, (200,200))
+            frs_star_rect = frs_star.get_rect(center=(pantalla_juego.get_width() // 2, pantalla_juego.get_height() // 3))
+            pantalla_juego.blit(frs_star, frs_star_rect)
+        
+            # Posicionar segunda estrella a la izquierda de la primera
+            snd_star_rect = pygame.Rect(frs_star_rect.left - frs_star_rect.width, frs_star_rect.top + 20, 100, 40)
+            snd_star = pygame.image.load("assets/star.png")
+            snd_star = pygame.transform.scale(snd_star, (200,200))
+            pantalla_juego.blit(snd_star, snd_star_rect)
+
+            # Posicionar segunda estrella a la izquierda de la primera
+            trd_star_rect = pygame.Rect(frs_star_rect.right - frs_star_rect.width + 200, frs_star_rect.top + 20, 100, 40)
+            trd_star = pygame.image.load("assets/star.png")
+            trd_star = pygame.transform.scale(trd_star, (200,200))
+            pantalla_juego.blit(trd_star, trd_star_rect)
+
+        if two_stars:
+            # Dibujar estrella central
+            frs_star = pygame.image.load("assets/star.png")
+            frs_star = pygame.transform.scale(frs_star, (200,200))
+            frs_star_rect = frs_star.get_rect(center=(pantalla_juego.get_width() // 2, pantalla_juego.get_height() // 3))
+            pantalla_juego.blit(frs_star, frs_star_rect)
+        
+            # Posicionar segunda estrella a la izquierda de la primera
+            snd_star_rect = pygame.Rect(frs_star_rect.left - frs_star_rect.width, frs_star_rect.top + 20, 100, 40)
+            snd_star = pygame.image.load("assets/star.png")
+            snd_star = pygame.transform.scale(snd_star, (200,200))
+            pantalla_juego.blit(snd_star, snd_star_rect)
+
+        if one_star:
+            # Dibujar estrella central
+            frs_star = pygame.image.load("assets/star.png")
+            frs_star = pygame.transform.scale(frs_star, (200,200))
+            frs_star_rect = frs_star.get_rect(center=(pantalla_juego.get_width() // 2, pantalla_juego.get_height() // 3))
+            pantalla_juego.blit(frs_star, frs_star_rect)
+
+        # Dibujar un botón de retorno
+        back_button_text = font.render("Back", True, (255, 255, 255))
+        back_button_text_rect = back_button_text.get_rect(center=(pantalla_juego.get_width() // 2, text_rect.bottom + 450))
+        back_button_rect = back_button_text_rect.inflate(10, 10)  
+        pantalla_juego.blit(back_button_text, back_button_text_rect)
+
+        # Manejar eventos de clic en el botón de retorno
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and back_button_rect.collidepoint(event.pos):
+                pygame.mixer.stop()
+                exec(open("./main.py", "r").read(), globals()) 
+                pygame.display.update()
+                pygame.quit()
+                sys.exit()
 
     pygame.display.update()
