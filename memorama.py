@@ -19,9 +19,12 @@ mostrar_piezas = 2 #para ocultar las tarjetas.
 info = pygame.display.Info()
 SCREEN_WIDTH = info.current_w
 SCREEN_HEIGHT = info.current_h
+# Cargar una imagen de fondo
+BG = pygame.image.load("assets/background_water.png")
+BG = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
 #Inicializar el cronometro
 tiempo_inicial = time.time()
-duracion_temporizador = 60
+duracion_temporizador = 90
 tiempo_final = tiempo_inicial + duracion_temporizador
 font = pygame.font.Font(None, 120)
 
@@ -192,7 +195,7 @@ while True:
         ultimos_segundos = -1
         puede_jugar = True
 
-    pantalla_juego.fill(color_blanco)
+    pantalla_juego.blit(BG, (0, 0))
 
     start_x = (SCREEN_WIDTH - len(cuadros[0]) * medida_cuadro) // 2
     start_y = (SCREEN_HEIGHT - len(cuadros) * medida_cuadro) // 2
@@ -213,7 +216,7 @@ while True:
     if juego_iniciado:
         pygame.draw.rect(pantalla_juego, color_blanco, boton)
         pantalla_juego.blit(fuente.render('INICIAR JUEGO', True, color_gris), (xFuente, yFuente))
-        if tiempo_restante > 0:
+        if tiempo_restante > 0 and not gana():
             # Actualiza y dibuja el texto del temporizador
             timer_text = font.render("Time: {}".format(tiempo_restante), True, (255, 0, 0))
             text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
@@ -225,15 +228,19 @@ while True:
     # Draw stars outside the event loop
     if gana():
         # Determine stars based on time remaining
-        if tiempo_restante >= 40:
+        if tiempo_restante >= 60:
             three_stars = True
-        elif 20 <= tiempo_restante < 40:
+        elif 30 <= tiempo_restante < 60:
             two_stars = True
-        elif tiempo_restante < 20:
+        elif tiempo_restante < 30:
             one_star = True
 
     # Draw stars and victory message outside the event loop
     if gana():
+
+        BG2 = pygame.image.load("assets/background_2.png")
+        BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        pantalla_juego.blit(BG2, (0, 0))
 
         # Mostrar un mensaje de victoria
         font = pygame.font.Font(None, 120)
@@ -254,7 +261,7 @@ while True:
         pantalla_juego.blit(snd_star_b, snd_star_b_rect)
 
         # Posicionar tercera estrella a la derecha de la primera
-        trd_star_b_rect = pygame.Rect(frs_star_b_rect.right + 20, frs_star_b_rect.top + 20, 100, 40)
+        trd_star_b_rect = pygame.Rect(frs_star_b_rect.right - frs_star_b_rect.width + 200, frs_star_b_rect.top + 20, 100, 40)
         trd_star_b = pygame.image.load("assets/starb.png")
         trd_star_b = pygame.transform.scale(trd_star_b, (200,200))
         pantalla_juego.blit(trd_star_b, trd_star_b_rect)
@@ -312,5 +319,61 @@ while True:
                 pygame.display.update()
                 pygame.quit()
                 sys.exit()
+
+    if not gana() and tiempo_restante <=0:
+        BG2 = pygame.image.load("assets/background_2.png")
+        BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        pantalla_juego.blit(BG2, (0, 0))
+
+        # Mostrar "Game Over"
+        font = pygame.font.Font(None, 120)
+        game_over_text = font.render("Game Over!", True, (255, 0, 0))
+        game_over_text_rect = game_over_text.get_rect(center=(pantalla_juego.get_width() // 2, pantalla_juego.get_height() // 5))
+        pantalla_juego.blit(game_over_text, game_over_text_rect)
+
+        # Dibujar estrella central
+        frs_star_b = pygame.image.load("assets/starb.png")
+        frs_star_b = pygame.transform.scale(frs_star_b, (200,200))
+        frs_star_b_rect = frs_star_b.get_rect(center=(pantalla_juego.get_width() // 2, pantalla_juego.get_height() // 3))
+        pantalla_juego.blit(frs_star_b, frs_star_b_rect)
+    
+        # Posicionar segunda estrella a la izquierda de la primera
+        snd_star_b_rect = pygame.Rect(frs_star_b_rect.left - frs_star_b_rect.width, frs_star_b_rect.top + 20, 100, 40)
+        snd_star_b = pygame.image.load("assets/starb.png")
+        snd_star_b = pygame.transform.scale(snd_star_b, (200,200))
+        pantalla_juego.blit(snd_star_b, snd_star_b_rect)
+
+        # Posicionar tercera estrella a la derecha de la primera
+        trd_star_b_rect = pygame.Rect(frs_star_b_rect.right + 20, frs_star_b_rect.top + 20, 100, 40)
+        trd_star_b = pygame.image.load("assets/starb.png")
+        trd_star_b = pygame.transform.scale(trd_star_b, (200,200))
+        pantalla_juego.blit(trd_star_b, trd_star_b_rect)
+
+        # Dibujar un botón "Reset"
+        reset_button_text = font.render("Reset", True, (255, 255, 255))
+        reset_button_text_rect = reset_button_text.get_rect(center=(pantalla_juego.get_width() // 2, game_over_text_rect.bottom + 450))
+        reset_button_rect = reset_button_text_rect.inflate(10, 10)
+        pantalla_juego.blit(reset_button_text, reset_button_text_rect)
+
+        # Dibujar un botón "Back"
+        back_button_text = font.render("Back", True, (255, 255, 255))
+        back_button_text_rect = back_button_text.get_rect(center=(pantalla_juego.get_width() // 2, game_over_text_rect.bottom + 550))
+        back_button_rect = back_button_text_rect.inflate(10, 10)  
+        pantalla_juego.blit(back_button_text, back_button_text_rect)
+
+            
+        # Manejar eventos de clic en el botón de retorno
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and back_button_rect.collidepoint(event.pos):
+                # Código para volver al menú principal
+                pygame.mixer.stop()
+                exec(open("./main.py", "r").read(), globals()) 
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and reset_button_rect.collidepoint(event.pos):
+                exec(open("./memorama.py", "r").read(), globals()) 
+                pygame.quit()
+                sys.exit()
+
 
     pygame.display.update()
