@@ -14,8 +14,6 @@ PALABRAS = ["SOLAR",
             "GEOTERMICA", 
             "MAREMOTO"]
 
-
-
 # Matriz de letras (15x15)
 MATRIZ_LETRAS = [
     ["S", "O", "L", "A", "R", "E", "M", "O", "T", "O", "I", "C", "A", "E", "O"],
@@ -65,10 +63,16 @@ ventana_rect = ventana.get_rect()
 ventana_rect.center = pygame.display.get_surface().get_rect().center
 ventana.blit(pygame.display.get_surface(), (0, 0), ventana_rect)
 
+
 # Definir la velocidad de fotogramas (FPS)
 FPS = 30
 clock = pygame.time.Clock()
 
+
+# Cargar una imagen de fondo
+BG = pygame.image.load("assets/image.png")
+BG = pygame.transform.scale(BG, (1366, 768))
+ventana.blit(BG, (0, 0))
 # Texto de indicación debajo del tiempo
 fuente_indicacion = pygame.font.Font(None, 24)
 texto_indicacion = fuente_indicacion.render(" Encuentra palabras relacionadas con energías renovables ", True, LETRA_COLOR)
@@ -117,6 +121,7 @@ y_pos_palabras = ALTO - 30
 
 # Bucle principal
 while not terminado:
+
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             terminado = True
@@ -214,7 +219,7 @@ while not terminado:
     # Verificar si el juego ha terminado (ganado o perdido)
     if juego_ganado or tiempo_restante == 0:
         juego_terminado = True
-    ventana.fill(FONDO_COLOR)  # Limpiar la ventana antes de redibujar
+        ventana.blit(BG, (0, 0)) # Limpiar la ventana antes de redibujar
 
     # Dibujar el contador regresivo en la parte superior derecha
     minutos_restantes = tiempo_restante // 60000
@@ -223,7 +228,7 @@ while not terminado:
         tiempo_texto = f"Tiempo restante: {minutos_restantes:02}:{segundos_restantes:02}"
     fuente_tiempo = pygame.font.Font(None, 24)
     texto_tiempo = fuente_tiempo.render(tiempo_texto, True, LETRA_COLOR)
-    ventana.fill(FONDO_COLOR)
+    ventana.blit(BG, (0, 0))
     ventana.blit(texto_tiempo, (ANCHO - texto_tiempo.get_width() - 10, 10))
 
     # Dibujar el tablero centrado en la ventana

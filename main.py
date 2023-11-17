@@ -8,6 +8,12 @@ from button import Button # Importación de la clase Button desde un módulo per
 # Inicialización de Pygame
 pygame.init()
 
+en = False
+
+volume = 0.5  # Initial volume
+min_volume = 0.0
+max_volume = 1.0
+
 # Cargar el archivo de audio
 pygame.mixer.music.load("assets/Rose_Garden.ogg")
 
@@ -61,6 +67,76 @@ def get_scaled_position(x, y):
     scaled_y = int(y * scale_factor)
     return (scaled_x, scaled_y)
 
+def options():
+    global volume, en
+
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+
+        SCREEN.blit(BG, (0, 0))
+
+        # Define bar position and dimensions
+        bar_x = 100
+        bar_y = 100
+        bar_width = 200
+        bar_height = 20
+
+        # Draw the volume bar
+        bar_color = (255, 255, 255)  # White color
+        pygame.draw.rect(SCREEN, bar_color, (bar_x, bar_y, bar_width, bar_height))
+
+        # Draw a volume indicator on the bar
+        indicator_pos = bar_x + int(volume * bar_width)
+        indicator_color = (0, 255, 0)  # Green color
+        pygame.draw.rect(SCREEN, indicator_color, (indicator_pos, bar_y + 5, 5, 10))
+
+        OPTIONS_BACK = Button(image=None, pos=(640, 460),
+                              text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green")
+
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(SCREEN)
+        
+        OPTIONS_EN = Button(image=None, pos=(640, 660),
+                              text_input="ENGLISH", font=get_font(75), base_color="Black", hovering_color="Green")
+
+        OPTIONS_EN.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_EN.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()  # Get mouse position
+                if bar_x <= mouse_pos[0] <= bar_x + bar_width and bar_y <= mouse_pos[1] <= bar_y + bar_height:
+                    volume = calculate_volume(mouse_pos, bar_x, bar_y, bar_width)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    main_menu()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_EN.checkForInput(OPTIONS_MOUSE_POS):
+                        en = not en
+
+        pygame.display.update()
+
+def calculate_volume(mouse_pos, bar_x, bar_y, bar_width):
+    global volume  # Declare volume as a global variable
+
+    # Calculate volume based on mouse position within the bar
+    volume_pos = (mouse_pos[0] - bar_x) / bar_width
+    volume = min(max(volume_pos, 0), 1)
+
+    # Set the volume for the music
+    pygame.mixer.music.set_volume(volume)
+
+    return volume
+
+def get_play_text():
+    if en:
+        return "PLAY"
+    else:
+        return "JUGAR"
+
 # Función para mostrar el menú principal
 def main_menu():
     while True:
@@ -74,11 +150,11 @@ def main_menu():
         
         # Crea botones para "JUGAR", "OPCIONES" y "SALIR" en el menú principal
         PLAY_BUTTON = Button(image=pygame.image.load("assets/play.png"), pos=get_scaled_position(640, 250), 
-                            text_input="PLAY", font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+                            text_input=get_play_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
         OPTIONS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 400), 
                             text_input="OPTIONS", font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
         QUIT_BUTTON = Button(image=pygame.image.load("assets/quit.png"), pos=get_scaled_position(640, 550), 
-                            text_input="QUIT", font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+                           text_input="QUIT", font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
 
         SCREEN.blit(MENU_TEXT, MENU_RECT) # Dibuja el título del menú
         
@@ -94,7 +170,8 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     play()
-                
+                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    options()
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()

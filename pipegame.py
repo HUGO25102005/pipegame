@@ -112,7 +112,7 @@ def draw_red_image(surface, cell_position):
 back_button = pygame.Rect(10, 500, 100, 40)
 
 # Función principal
-def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj11):
+def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj11,obj12,obj13,obj14):
     global game_over
     game_event_loop(obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9) # Capturar eventos del juego
     Surface.blit(BG, (0, 0)) # Dibujar el fondo del nivel
@@ -142,6 +142,9 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
     # Actualizar y dibujar objetos en la superficie
     obj10.update(Surface)
     obj11.update(Surface)
+    obj12.update(Surface)
+    obj13.update(Surface)
+    obj14.update(Surface)
     obj.update(Surface)
     obj2.update(Surface)
     obj3.update(Surface)
@@ -396,15 +399,21 @@ if __name__ == "__main__":
     obj9 = Object((TABLE_X + CELL_SIZE * 2, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (13, 10))
     obj10 = Object((TABLE_X + CELL_SIZE * 0, TABLE_Y + CELL_SIZE * 0, CELL_SIZE, CELL_SIZE), (11, 5))
     obj11 = Object((TABLE_X + CELL_SIZE * 5, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (16, 10))
+    obj12 = Object((TABLE_X + CELL_SIZE * 0, TABLE_Y + CELL_SIZE * 1, CELL_SIZE, CELL_SIZE), (12, 5))
+    obj13 = Object((TABLE_X + CELL_SIZE * 4, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (15, 10))
+    obj14 = Object((TABLE_X + CELL_SIZE * 0, TABLE_Y + CELL_SIZE * 5, CELL_SIZE, CELL_SIZE), (11, 10))
     obj10.image = pygame.image.load("./assets/fuzebox_start1.png")
     obj11.image = pygame.image.load("./assets/fuzebox_end1.png")
+    obj12.image = pygame.image.load("./assets/arrow_down.png")
+    obj13.image = pygame.image.load("./assets/arrow_right.png")
+    obj14.image = pygame.image.load("./assets/arrow_bottomleft.png")
     obj5.image = pygame.image.load("./assets/topright_block.png")
 
     while 1:
         if not game_over:
             tiempo_restante = int(tiempo_final - time.time())
             
-        main(Screen,obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9,obj10,obj11)
+        main(Screen,obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9,obj10,obj11,obj12,obj13,obj14)
         
         if not game_over and tiempo_restante > 0:
             # Actualiza y dibuja el texto del temporizador
