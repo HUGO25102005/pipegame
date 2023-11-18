@@ -54,6 +54,11 @@ agregar_palabras(MATRIZ_LETRAS, PALABRAS)
 # Inicializar Pygame
 pygame.init()
 
+# Obtener la resolución de la pantalla del usuario
+info = pygame.display.Info()
+SCREEN_WIDTH = info.current_w
+SCREEN_HEIGHT = info.current_h
+
 # Crear la ventana
 ventana = pygame.display.set_mode((ANCHO, ALTO), pygame.RESIZABLE)
 pygame.display.set_caption("Sopa de Letras")
@@ -70,9 +75,9 @@ clock = pygame.time.Clock()
 
 
 # Cargar una imagen de fondo
-BG = pygame.image.load("assets/image.png")
+BG = pygame.image.load("assets/energia.solar.png")
 BG = pygame.transform.scale(BG, (1366, 768))
-ventana.blit(BG, (0, 0))
+
 # Texto de indicación debajo del tiempo
 fuente_indicacion = pygame.font.Font(None, 24)
 texto_indicacion = fuente_indicacion.render(" Encuentra palabras relacionadas con energías renovables ", True, LETRA_COLOR)
@@ -185,18 +190,25 @@ while not terminado:
 
       # Dibujar las palabras encontradas en la parte inferior izquierda
         fuente_palabras_encontradas = pygame.font.Font(None, 24)
-        y_pos_palabras = ALTO - 30  # Posición inicial en el eje Y
+        y_pos_palabras = ALTO - 30
 
-        for palabra_encontrada in PALABRAS:
-            # Determina el color de la palabra (resaltada si fue encontrada)
+        for palabra_encontrada in palabras_encontradas:
             color_palabra_encontrada = LETRA_COLOR
             if palabra_encontrada in palabras_encontradas:
-                color_palabra_encontrada = (0, 255, 0)  # Cambia a verde si está encontrada
+                color_palabra_encontrada = (0, 255, 0)  # Change to green if found
 
+            # Draw the outline
+            outline_text = fuente_palabras_encontradas.render(palabra_encontrada, True, (0, 0, 0))
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    ventana.blit(outline_text, (10 + i, y_pos_palabras + j))
+
+            # Draw the actual text
             texto_palabra_encontrada = fuente_palabras_encontradas.render(palabra_encontrada, True, color_palabra_encontrada)
             ventana.blit(texto_palabra_encontrada, (10, y_pos_palabras))
-            y_pos_palabras -= 30  # Ajusta el espacio vertical entre las palabras encontradas hacia arriba
-     
+
+            y_pos_palabras -= 30 # Ajusta el espacio vertical entre las palabras encontradas hacia arriba     
+
      # Calcular el tiempo restante
     tiempo_actual = pygame.time.get_ticks()
     tiempo_restante = max(0, tiempo_maximo - (tiempo_actual - tiempo_inicio))
@@ -236,8 +248,17 @@ while not terminado:
     tablero_y = (ALTO - len(MATRIZ_LETRAS) * TAMANO_CELDA) // 2 + 30  # Ajuste hacia abajo
     for y, fila in enumerate(MATRIZ_LETRAS):
         for x, letra in enumerate(fila):
+            # Dibujar el borde blanco alrededor de la letra
+            fuente_borde = pygame.font.Font(None, 36)
+            texto_borde = fuente_borde.render(letra, True, (255, 255, 255))
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    ventana.blit(texto_borde, (tablero_x + x * TAMANO_CELDA + i, tablero_y + y * TAMANO_CELDA + j))
+
+           # Dibujar la letra en el color deseado
             fuente = pygame.font.Font(None, 36)
-            texto = fuente.render(letra, True, LETRA_COLOR)
+            color_letra = LETRA_COLOR
+            texto = fuente.render(letra, True, color_letra)
             ventana.blit(texto, (tablero_x + x * TAMANO_CELDA, tablero_y + y * TAMANO_CELDA))
 
     
