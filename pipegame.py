@@ -6,6 +6,12 @@ import pygame
 
 pygame.init()
 
+en = False
+
+# Leer el valor desde el archivo la próxima vez que ejecutes el programa
+with open('./__pycache__/en.txt', 'r') as archivo:
+   en = bool(int(archivo.read()))
+
 # Definición de constantes
 NUM_CELLS = 6
 CELL_SIZE = 68
@@ -110,6 +116,24 @@ def draw_red_image(surface, cell_position):
 
 # Definición de un botón de retorno
 back_button = pygame.Rect(10, 500, 100, 40)
+
+def get_win_text():
+    if en:
+        return "You Won!"
+    if not en:
+        return "¡Has ganado!"
+
+def get_back_text():
+    if en:
+        return "Back"
+    if not en:
+        return "Atras"
+
+def get_reset_text():
+    if en:
+        return "Reset"
+    if not en:
+        return "Reiniciar"
 
 # Función principal
 def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj11,obj12,obj13,obj14):
@@ -235,7 +259,7 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
 
         # Mostrar un mensaje de victoria
         font = pygame.font.Font(None, 120)
-        text = font.render("You Won!", True, (255, 0, 0))
+        text = font.render(get_win_text(), True, (255, 0, 0))
         text_rect = text.get_rect(center=(Surface.get_width() // 2, Surface.get_height() // 5))
         Surface.blit(text, text_rect)
 
@@ -306,7 +330,7 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
             Surface.blit(frs_star, frs_star_rect)
         
         # Dibujar un botón de retorno
-        back_button_text = font.render("Back", True, (255, 255, 255))
+        back_button_text = font.render(get_back_text(), True, (255, 255, 255))
         back_button_text_rect = back_button_text.get_rect(center=(Surface.get_width() // 2, text_rect.bottom + 450))
         back_button_rect = back_button_text_rect.inflate(10, 10)  
         Surface.blit(back_button_text, back_button_text_rect)
@@ -383,6 +407,12 @@ def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
             pygame.quit()
             sys.exit()
 
+def get_time_text():
+    if en:
+        return "Time: {}"
+    if not en:
+        return "Tiempo: {}"
+
 # Función principal del programa
 if __name__ == "__main__":
     os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -417,7 +447,7 @@ if __name__ == "__main__":
         
         if not game_over and tiempo_restante > 0:
             # Actualiza y dibuja el texto del temporizador
-            timer_text = font.render("Time: {}".format(tiempo_restante), True, (255, 0, 0))
+            timer_text = font.render(get_time_text().format(tiempo_restante), True, (255, 0, 0))
             text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
             Screen.blit(timer_text, text_rect)
     
@@ -468,13 +498,13 @@ if __name__ == "__main__":
             Screen.blit(trd_star_b, trd_star_b_rect)
 
             # Dibujar un botón "Reset"
-            reset_button_text = font.render("Reset", True, (255, 255, 255))
+            reset_button_text = font.render(get_reset_text, True, (255, 255, 255))
             reset_button_text_rect = reset_button_text.get_rect(center=(Screen.get_width() // 2, game_over_text_rect.bottom + 450))
             reset_button_rect = reset_button_text_rect.inflate(10, 10)
             Screen.blit(reset_button_text, reset_button_text_rect)
 
             # Dibujar un botón "Back"
-            back_button_text = font.render("Back", True, (255, 255, 255))
+            back_button_text = font.render(get_back_text, True, (255, 255, 255))
             back_button_text_rect = back_button_text.get_rect(center=(Screen.get_width() // 2, game_over_text_rect.bottom + 550))
             back_button_rect = back_button_text_rect.inflate(10, 10)  
             Screen.blit(back_button_text, back_button_text_rect)

@@ -11,6 +11,12 @@ pygame.font.init()
 pygame.mixer.init()
 
 #VARIABLES ...........................................................................
+en = False
+
+# Leer el valor desde el archivo la próxima vez que ejecutes el programa
+with open('./__pycache__/en.txt', 'r') as archivo:
+   en = bool(int(archivo.read()))
+
 altura_boton = 30   #para iniciar el juego (tamaño)
 medida_cuadro = 260  #tamaño de la imagen
 nombre_imagen_oculta = "imagenes/pregunta1.png" #imagen de la tarjeta volteada
@@ -132,6 +138,36 @@ def iniciar_juego():
     ocultar_todas_las_cartas()
     juego_iniciado = True
 
+def get_time_text():
+    if en:
+        return "Time: {}"
+    if not en:
+        return "Tiempo: {}"
+
+def get_win_text():
+    if en:
+        return "You Won!"
+    if not en:
+        return "¡Has ganado!"
+
+def get_back_text():
+    if en:
+        return "Back"
+    if not en:
+        return "Atras"
+
+def get_reset_text():
+    if en:
+        return "Reset"
+    if not en:
+        return "Reiniciar"
+
+def get_start_text():
+    if en:
+        return "START GAME"
+    if not en:
+        return "INICIAR JUEGO"
+
 #INICIA PANTALLA.......................................................
 # creamos la pantalla
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -218,12 +254,12 @@ while True:
         pantalla_juego.blit(fuente.render('INICIAR JUEGO', True, color_gris), (xFuente, yFuente))
         if tiempo_restante > 0 and not gana():
             # Actualiza y dibuja el texto del temporizador
-            timer_text = font.render("Time: {}".format(tiempo_restante), True, (255, 0, 0))
+            timer_text = font.render(get_time_text().format(tiempo_restante), True, (255, 0, 0))
             text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
             pantalla_juego.blit(timer_text, text_rect)
     else:
         pygame.draw.rect(pantalla_juego, color_azul, boton)
-        pantalla_juego.blit(fuente.render('INICIAR JUEGO', True, color_blanco), (xFuente, yFuente))
+        pantalla_juego.blit(fuente.render(get_start_text(), True, color_blanco), (xFuente, yFuente))
 
     # Draw stars outside the event loop
     if gana():
@@ -244,7 +280,7 @@ while True:
 
         # Mostrar un mensaje de victoria
         font = pygame.font.Font(None, 120)
-        text = font.render("You Won!", True, (255, 0, 0))
+        text = font.render(get_win_text(), True, (255, 0, 0))
         text_rect = text.get_rect(center=(pantalla_juego.get_width() // 2, pantalla_juego.get_height() // 5))
         pantalla_juego.blit(text, text_rect)
 
@@ -306,7 +342,7 @@ while True:
             pantalla_juego.blit(frs_star, frs_star_rect)
 
         # Dibujar un botón de retorno
-        back_button_text = font.render("Back", True, (255, 255, 255))
+        back_button_text = font.render(get_back_text(), True, (255, 255, 255))
         back_button_text_rect = back_button_text.get_rect(center=(pantalla_juego.get_width() // 2, text_rect.bottom + 450))
         back_button_rect = back_button_text_rect.inflate(10, 10)  
         pantalla_juego.blit(back_button_text, back_button_text_rect)
@@ -350,13 +386,13 @@ while True:
         pantalla_juego.blit(trd_star_b, trd_star_b_rect)
 
         # Dibujar un botón "Reset"
-        reset_button_text = font.render("Reset", True, (255, 255, 255))
+        reset_button_text = font.render(get_reset_text(), True, (255, 255, 255))
         reset_button_text_rect = reset_button_text.get_rect(center=(pantalla_juego.get_width() // 2, game_over_text_rect.bottom + 450))
         reset_button_rect = reset_button_text_rect.inflate(10, 10)
         pantalla_juego.blit(reset_button_text, reset_button_text_rect)
 
         # Dibujar un botón "Back"
-        back_button_text = font.render("Back", True, (255, 255, 255))
+        back_button_text = font.render(get_back_text(), True, (255, 255, 255))
         back_button_text_rect = back_button_text.get_rect(center=(pantalla_juego.get_width() // 2, game_over_text_rect.bottom + 550))
         back_button_rect = back_button_text_rect.inflate(10, 10)  
         pantalla_juego.blit(back_button_text, back_button_text_rect)

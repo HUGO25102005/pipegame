@@ -10,6 +10,10 @@ pygame.init()
 
 en = False
 
+# Leer el valor desde el archivo la próxima vez que ejecutes el programa
+with open('./__pycache__/en.txt', 'r') as archivo:
+   en = bool(int(archivo.read()))
+
 volume = 0.5  # Initial volume
 min_volume = 0.0
 max_volume = 1.0
@@ -76,10 +80,16 @@ def options():
         SCREEN.blit(BG, (0, 0))
 
         # Define bar position and dimensions
-        bar_x = 100
-        bar_y = 100
-        bar_width = 200
+        bar_x = SCREEN_WIDTH // 4  # Ajustar la posición de la barra según la resolución
+        bar_y = SCREEN_HEIGHT // 2.5
+        bar_width = SCREEN_WIDTH // 2
         bar_height = 20
+
+        OPTIONS_EN = Button(image=None, pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
+                            text_input="ENGLISH", font=get_font(75), base_color="Black", hovering_color="Green")
+
+        OPTIONS_EN.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_EN.update(SCREEN)
 
         # Draw the volume bar
         bar_color = (255, 255, 255)  # White color
@@ -90,17 +100,11 @@ def options():
         indicator_color = (0, 255, 0)  # Green color
         pygame.draw.rect(SCREEN, indicator_color, (indicator_pos, bar_y + 5, 5, 10))
 
-        OPTIONS_BACK = Button(image=None, pos=(640, 460),
+        OPTIONS_BACK = Button(image=None, pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.5),
                               text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green")
 
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_BACK.update(SCREEN)
-        
-        OPTIONS_EN = Button(image=None, pos=(640, 660),
-                              text_input="ENGLISH", font=get_font(75), base_color="Black", hovering_color="Green")
-
-        OPTIONS_EN.changeColor(OPTIONS_MOUSE_POS)
-        OPTIONS_EN.update(SCREEN)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -115,7 +119,14 @@ def options():
                     main_menu()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if OPTIONS_EN.checkForInput(OPTIONS_MOUSE_POS):
-                        en = not en
+                    if en:
+                        en = False
+                    else:
+                        en = True
+
+                    # Guardar el valor en un archivo
+                    with open('./__pycache__/en.txt', 'w') as archivo:
+                        archivo.write(str(int(en)))
 
         pygame.display.update()
 
@@ -137,6 +148,18 @@ def get_play_text():
     else:
         return "JUGAR"
 
+def get_option_text():
+    if en:
+        return "OPTIONS"
+    else:
+        return "OPCIONES"
+
+def get_quit_text():
+    if en:
+        return "QUIT"
+    else:
+        return "SALIR"
+
 # Función para mostrar el menú principal
 def main_menu():
     while True:
@@ -152,9 +175,9 @@ def main_menu():
         PLAY_BUTTON = Button(image=pygame.image.load("assets/play.png"), pos=get_scaled_position(640, 250), 
                             text_input=get_play_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
         OPTIONS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 400), 
-                            text_input="OPTIONS", font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+                            text_input=get_option_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
         QUIT_BUTTON = Button(image=pygame.image.load("assets/quit.png"), pos=get_scaled_position(640, 550), 
-                           text_input="QUIT", font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+                           text_input=get_quit_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
 
         SCREEN.blit(MENU_TEXT, MENU_RECT) # Dibuja el título del menú
         
