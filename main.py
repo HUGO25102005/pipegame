@@ -71,6 +71,24 @@ def get_scaled_position(x, y):
     scaled_y = int(y * scale_factor)
     return (scaled_x, scaled_y)
 
+def get_language():
+    if en: 
+        return "assets/flag1.png"
+    else:
+        return "assets/flag2.png"
+
+def get_language_text():
+    if en: 
+        return "LANGUAGE:"
+    else:
+        return "IDIOMA:"
+
+def get_back_text():
+    if en:
+        return "BACK"
+    if not en:
+        return "ATRAS"
+
 def options():
     global volume, en
 
@@ -79,14 +97,27 @@ def options():
 
         SCREEN.blit(BG, (0, 0))
 
+        # Carga la imagen del volumen al comienzo de la función
+        volumen_image = pygame.image.load("./assets/volumen_menu.png")
+        
+
         # Define bar position and dimensions
         bar_x = SCREEN_WIDTH // 4  # Ajustar la posición de la barra según la resolución
-        bar_y = SCREEN_HEIGHT // 2.5
+        bar_y = SCREEN_HEIGHT // 4
         bar_width = SCREEN_WIDTH // 2
         bar_height = 20
 
-        OPTIONS_EN = Button(image=None, pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
-                            text_input="ENGLISH", font=get_font(75), base_color="Black", hovering_color="Green")
+        # Mostrar un mensaje de victoria
+        font = get_font(75)
+        text = font.render(get_language_text(), True, (0, 0, 0))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5))
+        SCREEN.blit(text, text_rect)
+
+        # Dibuja la imagen del volumen al lado izquierdo de la barra
+        SCREEN.blit(volumen_image, (bar_x - 100, bar_y - 40))  # Ajusta las coordenadas
+
+        OPTIONS_EN = Button(image=pygame.image.load(get_language()), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.8),
+                            text_input="", font=get_font(75), base_color="Black", hovering_color="Green")
 
         OPTIONS_EN.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_EN.update(SCREEN)
@@ -98,10 +129,10 @@ def options():
         # Draw a volume indicator on the bar
         indicator_pos = bar_x + int(volume * bar_width)
         indicator_color = (0, 255, 0)  # Green color
-        pygame.draw.rect(SCREEN, indicator_color, (indicator_pos, bar_y + 5, 5, 10))
+        pygame.draw.rect(SCREEN, indicator_color, (indicator_pos, bar_y - 5, 10, 30))
 
-        OPTIONS_BACK = Button(image=None, pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.5),
-                              text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green")
+        OPTIONS_BACK = Button(image=None, pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.2),
+                              text_input=get_back_text(), font=get_font(75), base_color="Black", hovering_color="Green")
 
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_BACK.update(SCREEN)
