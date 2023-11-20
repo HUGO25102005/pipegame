@@ -10,6 +10,8 @@ pygame.init()
 
 en = False
 
+dif = False
+
 # Leer el valor desde el archivo la próxima vez que ejecutes el programa
 with open('./__pycache__/en.txt', 'r') as archivo:
    en = bool(int(archivo.read()))
@@ -28,7 +30,7 @@ pygame.mixer.music.play(-1)  # El valor -1 indica que el audio se reproducirá e
 info = pygame.display.Info()
 SCREEN_WIDTH = info.current_w
 SCREEN_HEIGHT = info.current_h
-
+        
 # Definir la resolución base en la que se diseñaron los elementos
 base_resolution = (1280, 720)
 
@@ -44,18 +46,163 @@ BG = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
 def get_font(size): 
     return pygame.font.Font("assets/font.ttf", size)
 
+# Función para mostrar texto en la pantalla principal
+def mostrar_texto(texto, posicion):
+    # Definir colores
+    main_color = (255, 255, 255)  # Color principal del texto (negro)
+    border_color = (0, 0, 0)  # Color del borde (blanco)
+
+    # Crear superficie de texto principal
+    font = pygame.font.Font(None, 75)
+    text_surface = font.render(texto, True, main_color)
+
+    # Crear superficie de texto con borde
+    border_size = 2  # Ajusta el tamaño del borde aquí
+    border_surface = font.render(texto, True, border_color)
+    border_rect = border_surface.get_rect(center=text_surface.get_rect().center)
+
+    # Ajustar la posición del borde
+    border_rect.x -= border_size
+    border_rect.y -= border_size
+
+    # Crear una superficie transparente para combinar texto y borde
+    combined_surface = pygame.Surface(text_surface.get_size(), pygame.SRCALPHA)
+    combined_surface.blit(border_surface, border_rect)
+    combined_surface.blit(text_surface, (0, 0))
+
+    # Obtener el rectángulo de la superficie combinada
+    combined_rect = combined_surface.get_rect()
+    combined_rect.midtop = posicion
+
+    # Blit la superficie combinada en la pantalla
+    SCREEN.blit(combined_surface, combined_rect)
+
+# Definir colores
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+
+# Definir los rectángulos para cada nivel
+rect_1 = pygame.Rect(SCREEN_WIDTH // 3.75, SCREEN_HEIGHT // 2.5, 300, 200)  # Nivel 1
+rect_2 = pygame.Rect(SCREEN_WIDTH // 2.25, SCREEN_HEIGHT // 2.5, 300, 200)  # Nivel 2
+rect_3 = pygame.Rect(SCREEN_WIDTH // 1.6, SCREEN_HEIGHT // 2.5, 300, 200)  # Nivel 3
+
+# Cargar las imágenes para cada nivel
+nivel1_image = pygame.image.load("assets/nivel1.png")
+nivel2_image = pygame.image.load("assets/nivel2.png")    
+nivel3_image = pygame.image.load("assets/nivel3.png")
+
+# Escalar las imágenes para que encajen en los rectángulos
+nivel1_image = pygame.transform.scale(nivel1_image, (rect_1.width, rect_1.height))
+nivel2_image = pygame.transform.scale(nivel2_image, (rect_2.width, rect_2.height))
+nivel3_image = pygame.transform.scale(nivel3_image, (rect_3.width, rect_3.height))
+
+def get_level1_text():
+    if en: 
+        return "LEVEL 1"
+    else:
+        return "NIVEL 1"
+
+def get_level2_text():
+    if en: 
+        return "LEVEL 2"
+    else:
+        return "NIVEL 2"
+
+def get_level3_text():
+    if en: 
+        return "LEVEL 3"
+    else:
+        return "NIVEL 3"
+
+def get_dif1_text():
+    if en and not dif: 
+        return "DIFFICULTY: EASY"
+    if not en and not dif:
+        return "DIFICULTAD: FACIL"
+    if en and dif:
+        return "DIFFICULTY: HARD"
+    if not en and dif:
+        return "DIFICULTAD: DIFICIL"
+
+
 # Función para comenzar el juego
 def play():
-    pygame.mixer.music.stop()
-    # Cargar el archivo de audio
-    pygame.mixer.music.load("assets/A_Lonely_Cherry_Tree.ogg")
+    global dif
 
-    # Reproducir el audio en bucle
-    pygame.mixer.music.play(-1)  # El valor -1 indica que el audio se reproducirá en bucle infinito
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
-    exec(open("pipegame.py", "r").read(), globals()) # Ejecuta el archivo "pipegame.py" 
-    pygame.display.update()
+        SCREEN.blit(BG, (0, 0))
 
+        # Dibujar los rectángulos en la pantalla principal
+        pygame.draw.rect(SCREEN, RED, rect_1, 2)
+        pygame.draw.rect(SCREEN, GREEN, rect_2, 2)
+        pygame.draw.rect(SCREEN, BLUE, rect_3, 2)
+
+        # Dibujar las imágenes dentro de los rectángulos
+        SCREEN.blit(nivel1_image, rect_1)
+        SCREEN.blit(nivel2_image, rect_2)
+        SCREEN.blit(nivel3_image, rect_3)
+
+        # Mostrar texto debajo de los rectángulos
+        mostrar_texto(get_level1_text(), (rect_1.centerx, rect_1.bottom + 10))  
+        mostrar_texto(get_level2_text(), (rect_2.centerx, rect_2.bottom + 10))  
+        mostrar_texto(get_level3_text(), (rect_3.centerx, rect_3.bottom + 10))  
+
+        OPTIONS_BACK = Button(image=pygame.image.load("assets/play.png"), pos=(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 1.2),
+                              text_input=get_back_text(), font=get_font(75), base_color="Black", hovering_color="Cyan")
+
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(SCREEN)
+
+        OPTIONS_DIF = Button(image=pygame.image.load("assets/difficulty.png"), pos=(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 10),
+                             text_input=get_dif1_text(), font=get_font(75), base_color="Black", hovering_color="Cyan")
+
+        OPTIONS_DIF.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_DIF.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:  # Si se hace clic izquierdo
+                mouse_pos = pygame.mouse.get_pos()
+                # Verificar si se hizo clic dentro de algún rectángulo
+                if rect_1.collidepoint(mouse_pos) and not dif:
+                    pygame.mixer.music.stop()
+                    exec(open("pipegame.py", "r").read(), globals()) # Ejecuta el archivo "pipegame.py" 
+                    pygame.display.update()
+                if rect_1.collidepoint(mouse_pos) and dif:
+                    pygame.mixer.music.stop()
+                    exec(open("pipegame1.py", "r").read(), globals()) # Ejecuta el archivo "pipegame1.py" 
+                    pygame.display.update()
+                if rect_2.collidepoint(mouse_pos) and not dif:
+                    pygame.mixer.music.stop()
+                    exec(open("memorama.py", "r").read(), globals()) # Ejecuta el archivo "memorama.py" 
+                    pygame.display.update()
+                if rect_2.collidepoint(mouse_pos) and dif:
+                    pygame.mixer.music.stop()
+                    exec(open("memorama1.py", "r").read(), globals()) # Ejecuta el archivo "memorama1.py" 
+                    pygame.display.update()
+                if rect_3.collidepoint(mouse_pos) and not dif:
+                    pygame.mixer.music.stop()
+                    exec(open("Sopa2.1.py", "r").read(), globals()) # Ejecuta el archivo "pipegame.py" 
+                    pygame.display.update()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    main_menu()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_DIF.checkForInput(OPTIONS_MOUSE_POS):
+                    if dif:
+                        dif = False
+                    else:
+                        dif = True
+
+        # Actualizar la pantalla
+        pygame.display.update()
 
 # Función para obtener una fuente con el tamaño escalado en función de la resolución
 def get_scaled_font(size):

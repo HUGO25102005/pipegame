@@ -1,14 +1,26 @@
 import pygame
 import sys
 
-# Niveles, pantalla ancho y alto de la ventana
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-
 # Inicializar Pygame
 pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# Obtener la resolución de la pantalla del usuario
+info = pygame.display.Info()
+SCREEN_WIDTH = info.current_w
+SCREEN_HEIGHT = info.current_h
+
+# Definir la resolución base en la que se diseñaron los elementos
+base_resolution = (800, 600)
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption("Niveles")
+
+# Función para calcular la posición escalada en función de la resolución
+def get_scaled_position(x, y):
+    scale_factor = min(SCREEN_WIDTH / base_resolution[0], SCREEN_HEIGHT / base_resolution[1])
+    scaled_x = int(x * scale_factor)
+    scaled_y = int(y * scale_factor)
+    return (scaled_x, scaled_y)
 
 # Definir colores
 WHITE = (255, 255, 255)
@@ -18,14 +30,14 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 # Definir los rectángulos para cada nivel
-rect_1 = pygame.Rect(50, 50, 200, 100)  # Nivel 1
-rect_2 = pygame.Rect(300, 50, 200, 100)  # Nivel 2
-rect_3 = pygame.Rect(550, 50, 200, 100)  # Nivel 3
+rect_1 = pygame.Rect(SCREEN_WIDTH // 3.75, SCREEN_HEIGHT // 2.5, 300, 200)  # Nivel 1
+rect_2 = pygame.Rect(SCREEN_WIDTH // 2.25, SCREEN_HEIGHT // 2.5, 300, 200)  # Nivel 2
+rect_3 = pygame.Rect(SCREEN_WIDTH // 1.6, SCREEN_HEIGHT // 2.5, 300, 200)  # Nivel 3
 
 # Cargar las imágenes para cada nivel
-nivel1_image = pygame.image.load("nivel1.png")
-nivel2_image = pygame.image.load("nivel2.png")
-nivel3_image = pygame.image.load("nivel3.png")
+nivel1_image = pygame.image.load("assets/nivel1.png")
+nivel2_image = pygame.image.load("assets/nivel2.png")
+nivel3_image = pygame.image.load("assets/nivel3.png")
 
 # Escalar las imágenes para que encajen en los rectángulos
 nivel1_image = pygame.transform.scale(nivel1_image, (rect_1.width, rect_1.height))
@@ -36,8 +48,17 @@ nivel3_image = pygame.transform.scale(nivel3_image, (rect_3.width, rect_3.height
 def show_level(level_image):
     level_aspect_ratio = level_image.get_width() / level_image.get_height()
     level_screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    scaled_level = pygame.transform.scale(level_image, (int(SCREEN_HEIGHT * level_aspect_ratio), SCREEN_HEIGHT))
-    level_screen.blit(scaled_level, ((SCREEN_WIDTH - scaled_level.get_width()) // 2, 0))
+    
+    # Calculate the scaled dimensions to maintain the aspect ratio
+    scaled_width = int(SCREEN_HEIGHT * level_aspect_ratio)
+    scaled_height = SCREEN_HEIGHT
+    
+    scaled_level = pygame.transform.scale(level_image, (scaled_width, scaled_height))
+    
+    # Calculate the position to center the image on the screen
+    level_position = ((SCREEN_WIDTH - scaled_width) // 2, (SCREEN_HEIGHT - scaled_height) // 2)
+    
+    level_screen.blit(scaled_level, level_position)
     pygame.display.set_caption("Nivel")
 
     running = True
@@ -49,14 +70,6 @@ def show_level(level_image):
                 sys.exit()
 
         pygame.display.flip()
-
-# Función para mostrar texto en la pantalla principal
-def mostrar_texto(texto, posicion):
-    font = pygame.font.Font(None, 36)  # Puedes ajustar el tamaño de la fuente aquí
-    text_surface = font.render(texto, True, BLACK)  # BLACK es un color definido o (0, 0, 0)
-    text_rect = text_surface.get_rect()
-    text_rect.midtop = posicion
-    screen.blit(text_surface, text_rect)
 
 # Bucle principal del juego
 running = True
