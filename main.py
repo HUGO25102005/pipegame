@@ -89,6 +89,12 @@ def get_back_text():
     if not en:
         return "ATRAS"
 
+def get_credits_image():
+    if en:
+        return "assets/credits.jpg"
+    if not en:
+        return "assets/creditos.jpg"
+
 def options():
     global volume, en
 
@@ -99,7 +105,6 @@ def options():
 
         # Carga la imagen del volumen al comienzo de la función
         volumen_image = pygame.image.load("./assets/volumen_menu.png")
-        
 
         # Define bar position and dimensions
         bar_x = SCREEN_WIDTH // 4  # Ajustar la posición de la barra según la resolución
@@ -107,11 +112,10 @@ def options():
         bar_width = SCREEN_WIDTH // 2
         bar_height = 20
 
-        # Mostrar un mensaje de victoria
-        font = get_font(75)
-        text = font.render(get_language_text(), True, (0, 0, 0))
-        text_rect = text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5))
-        SCREEN.blit(text, text_rect)
+        OPTIONS_ID = Button(image=pygame.image.load("assets/options.png"), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5),
+                            text_input=get_language_text(), font=get_font(75), base_color="Black", hovering_color="")
+
+        OPTIONS_ID.update(SCREEN)
 
         # Dibuja la imagen del volumen al lado izquierdo de la barra
         SCREEN.blit(volumen_image, (bar_x - 100, bar_y - 40))  # Ajusta las coordenadas
@@ -131,8 +135,8 @@ def options():
         indicator_color = (0, 255, 0)  # Green color
         pygame.draw.rect(SCREEN, indicator_color, (indicator_pos, bar_y - 5, 10, 30))
 
-        OPTIONS_BACK = Button(image=None, pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.2),
-                              text_input=get_back_text(), font=get_font(75), base_color="Black", hovering_color="Green")
+        OPTIONS_BACK = Button(image=pygame.image.load("assets/play.png"), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.2),
+                              text_input=get_back_text(), font=get_font(75), base_color="Black", hovering_color="Cyan")
 
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_BACK.update(SCREEN)
@@ -158,6 +162,32 @@ def options():
                     # Guardar el valor en un archivo
                     with open('./__pycache__/en.txt', 'w') as archivo:
                         archivo.write(str(int(en)))
+
+        pygame.display.update()
+
+def credits():
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+
+        # Cargar una imagen de fondo
+        CR = pygame.image.load(get_credits_image())
+        CR = pygame.transform.scale(CR, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+        SCREEN.blit(CR, (0, 0))
+
+        OPTIONS_BACK = Button(image=pygame.image.load("assets/play.png"), pos=(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 1.2),
+                              text_input=get_back_text(), font=get_font(75), base_color="Black", hovering_color="Cyan")
+
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    main_menu()
 
         pygame.display.update()
 
@@ -191,6 +221,12 @@ def get_quit_text():
     else:
         return "SALIR"
 
+def get_credits_text():
+    if en:
+        return "CREDITS"
+    else:
+        return "CREDITOS"
+
 # Función para mostrar el menú principal
 def main_menu():
     while True:
@@ -205,15 +241,17 @@ def main_menu():
         # Crea botones para "JUGAR", "OPCIONES" y "SALIR" en el menú principal
         PLAY_BUTTON = Button(image=pygame.image.load("assets/play.png"), pos=get_scaled_position(640, 250), 
                             text_input=get_play_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
-        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 400), 
+        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 350), 
                             text_input=get_option_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+        CREDITS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 450), 
+                            text_input=get_credits_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
         QUIT_BUTTON = Button(image=pygame.image.load("assets/quit.png"), pos=get_scaled_position(640, 550), 
                            text_input=get_quit_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
 
         SCREEN.blit(MENU_TEXT, MENU_RECT) # Dibuja el título del menú
         
         # Actualiza y muestra los botones en el menú principal
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON, CREDITS_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
         
@@ -226,6 +264,8 @@ def main_menu():
                     play()
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     options()
+                if CREDITS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    credits()
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
