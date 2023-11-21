@@ -387,7 +387,7 @@ def get_quit_text():
     else:
         return "SALIR"
 
-def get_back_text():
+def get_back1_text():
     if en:
         return "BACK"
     else:
@@ -399,7 +399,15 @@ def options_game():
     while True:
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
+        if not game_over:
+            tiempo_restante = int(tiempo_final - time.time())
+
         SCREEN.blit(BG, (0, 0))
+        if not game_over and tiempo_restante > 0:
+            # Actualiza y dibuja el texto del temporizador
+            timer_text = font.render(get_time_text().format(tiempo_restante), True, (255, 0, 0))
+            text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+            Screen.blit(timer_text, text_rect)
         BG2 = pygame.image.load("assets/background_2.png")
         BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
         SCREEN.blit(BG2, (0, 0)) # Dibuja la imagen de fondo en la pantalla
@@ -437,7 +445,7 @@ def options_game():
         pygame.draw.rect(SCREEN, indicator_color, (indicator_pos, bar_y - 5, 10, 30))
 
         OPTIONS_BACK = Button(image=pygame.image.load("assets/play.png"), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.2),
-                              text_input=get_back_text(), font=get_font(75), base_color="Black", hovering_color="Cyan")
+                              text_input=get_back1_text(), font=get_font(75), base_color="Black", hovering_color="Cyan")
 
         OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
         OPTIONS_BACK.update(SCREEN)
@@ -469,6 +477,13 @@ def options_game():
 def pause():
     while True:
         SCREEN.blit(BG, (0, 0))
+        if not game_over:
+            tiempo_restante = int(tiempo_final - time.time())
+        if not game_over and tiempo_restante > 0:
+            # Actualiza y dibuja el texto del temporizador
+            timer_text = font.render(get_time_text().format(tiempo_restante), True, (255, 0, 0))
+            text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+            Screen.blit(timer_text, text_rect)
         BG2 = pygame.image.load("assets/background_2.png")
         BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
         SCREEN.blit(BG2, (0, 0)) # Dibuja la imagen de fondo en la pantalla
@@ -496,7 +511,12 @@ def pause():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if CONTINUE_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    return
+                    if tiempo_restante > 0:
+                        return
+                    else:
+                        exec(open("./pipegame.py", "r").read(), globals()) 
+                        pygame.quit()
+                        sys.exit()
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     options_game()
                 if RESTART_BUTTON.checkForInput(MENU_MOUSE_POS):
@@ -606,9 +626,6 @@ if __name__ == "__main__":
     obj5.image = pygame.image.load("./assets/topright_block.png")
 
     while 1:
-        if pause:
-            stop.time()
-
         if not game_over:
             tiempo_restante = int(tiempo_final - time.time())
             

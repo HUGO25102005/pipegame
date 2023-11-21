@@ -12,6 +12,23 @@ en = False
 with open('./__pycache__/en.txt', 'r') as archivo:
    en = bool(int(archivo.read()))
 
+volume = 0.5  # Initial volume
+min_volume = 0.0
+max_volume = 1.0
+
+# Cargar el archivo de audio
+pygame.mixer.music.load("assets/A_Lonely_Cherry_Tree.ogg")
+
+# Reproducir el audio en bucle
+pygame.mixer.music.play(-1)  # El valor -1 indica que el audio se reproducirá en bucle infinito
+
+# Load the "pause.png" image
+pause_button_image = pygame.image.load("assets/pause_button1.png")
+pause_button_image = pygame.transform.scale(pause_button_image, (150, 150))  # Adjust the size as needed
+
+# Create a button rectangle in the top left corner
+pause_button_rect = pause_button_image.get_rect(topleft=(10, 10))
+
 # Definición de constantes
 NUM_CELLS = 6
 CELL_SIZE = 68
@@ -346,11 +363,160 @@ def main(Surface, obj, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9,obj10,obj1
 def mouse_release():
     pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONUP, button=pygame.BUTTON_LEFT))
 
+def get_continue_text():
+    if en: 
+        return "CONTINUE"
+    else:
+        return "CONTINUAR"
+
+def get_restart_text():
+    if en: 
+        return "RESTART"
+    else:
+        return "REINICIAR"
+
+def get_options_text():
+    if en: 
+        return "OPTIONS"
+    else:
+        return "OPCIONES"
+
+def get_quit_text():
+    if en: 
+        return "QUIT"
+    else:
+        return "SALIR"
+
+def get_back1_text():
+    if en:
+        return "BACK"
+    else:
+        return "ATRAS"
+
+def options_game():
+    global volume, en
+
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+
+        SCREEN.blit(BG, (0, 0))
+        BG2 = pygame.image.load("assets/background_2.png")
+        BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        SCREEN.blit(BG2, (0, 0)) # Dibuja la imagen de fondo en la pantalla
+
+        # Carga la imagen del volumen al comienzo de la función
+        volumen_image = pygame.image.load("./assets/volumen_menu.png")
+
+        # Define bar position and dimensions
+        bar_x = SCREEN_WIDTH // 4  # Ajustar la posición de la barra según la resolución
+        bar_y = SCREEN_HEIGHT // 4
+        bar_width = SCREEN_WIDTH // 2
+        bar_height = 20
+
+        OPTIONS_ID = Button(image=pygame.image.load("assets/options.png"), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5),
+                            text_input=get_language_text(), font=get_font(75), base_color="Black", hovering_color="")
+
+        OPTIONS_ID.update(SCREEN)
+
+        # Dibuja la imagen del volumen al lado izquierdo de la barra
+        SCREEN.blit(volumen_image, (bar_x - 100, bar_y - 40))  # Ajusta las coordenadas
+
+        OPTIONS_EN = Button(image=pygame.image.load(get_language()), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.8),
+                            text_input="", font=get_font(75), base_color="Black", hovering_color="Green")
+
+        OPTIONS_EN.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_EN.update(SCREEN)
+
+        # Draw the volume bar
+        bar_color = (255, 255, 255)  # White color
+        pygame.draw.rect(SCREEN, bar_color, (bar_x, bar_y, bar_width, bar_height))
+
+        # Draw a volume indicator on the bar
+        indicator_pos = bar_x + int(volume * bar_width)
+        indicator_color = (0, 255, 0)  # Green color
+        pygame.draw.rect(SCREEN, indicator_color, (indicator_pos, bar_y - 5, 10, 30))
+
+        OPTIONS_BACK = Button(image=pygame.image.load("assets/play.png"), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.2),
+                              text_input=get_back1_text(), font=get_font(75), base_color="Black", hovering_color="Cyan")
+
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()  # Get mouse position
+                if bar_x <= mouse_pos[0] <= bar_x + bar_width and bar_y <= mouse_pos[1] <= bar_y + bar_height:
+                    volume = calculate_volume(mouse_pos, bar_x, bar_y, bar_width)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_EN.checkForInput(OPTIONS_MOUSE_POS):
+                    if en:
+                        en = False
+                    else:
+                        en = True
+
+                    # Guardar el valor en un archivo
+                    with open('./__pycache__/en.txt', 'w') as archivo:
+                        archivo.write(str(int(en)))
+
+        pygame.display.update()
+
+def pause():
+    while True:
+        SCREEN.blit(BG, (0, 0))
+        BG2 = pygame.image.load("assets/background_2.png")
+        BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        SCREEN.blit(BG2, (0, 0)) # Dibuja la imagen de fondo en la pantalla
+
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+        
+        # Crea botones para "JUGAR", "OPCIONES" y "SALIR" en el menú principal
+        CONTINUE_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 250), 
+                            text_input=get_continue_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+        RESTART_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 350), 
+                            text_input=get_restart_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 450), 
+                            text_input=get_options_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+        QUIT_BUTTON = Button(image=pygame.image.load("assets/quit.png"), pos=get_scaled_position(640, 550), 
+                           text_input=get_quit_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+        
+        # Actualiza y muestra los botones en el menú principal
+        for button in [CONTINUE_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON, RESTART_BUTTON]:
+            button.changeColor(MENU_MOUSE_POS)
+            button.update(SCREEN)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if CONTINUE_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    return
+                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    options_game()
+                if RESTART_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    exec(open("./pipegame1.py", "r").read(), globals()) 
+                    pygame.quit()
+                    sys.exit()
+                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    exec(open("./main.py", "r").read(), globals()) 
+                    pygame.quit()
+                    sys.exit()
+
+        pygame.display.update()
+
 # Función para manejar eventos del juego
 def game_event_loop(obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9):
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Manejar el evento de clic del mouse en los objetos
+            if pause_button_rect.collidepoint(event.pos):
+                pause()
             if obj.rect.collidepoint(event.pos) and obj.clickable:
                 obj.click = True
             elif obj2.rect.collidepoint(event.pos) and obj2.clickable:
@@ -444,6 +610,8 @@ if __name__ == "__main__":
             tiempo_restante = int(tiempo_final - time.time())
             
         main(Screen,obj,obj2,obj3,obj4,obj5,obj6,obj7,obj8,obj9,obj10,obj11,obj12,obj13,obj14)
+
+        Screen.blit(pause_button_image, pause_button_rect)
         
         if not game_over and tiempo_restante > 0:
             # Actualiza y dibuja el texto del temporizador
@@ -524,4 +692,3 @@ if __name__ == "__main__":
         
         pygame.display.update()
         MyClock.tick(120)
-
