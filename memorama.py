@@ -251,7 +251,7 @@ while True:
 
     if juego_iniciado:
         pygame.draw.rect(pantalla_juego, color_blanco, boton)
-        pantalla_juego.blit(fuente.render('INICIAR JUEGO', True, color_gris), (xFuente, yFuente))
+        pantalla_juego.blit(fuente.render(get_start_text(), True, color_gris), (xFuente, yFuente))
         if tiempo_restante > 0 and not gana():
             # Actualiza y dibuja el texto del temporizador
             timer_text = font.render(get_time_text().format(tiempo_restante), True, (255, 0, 0))
