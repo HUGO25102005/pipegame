@@ -93,9 +93,21 @@ ventana.blit(pygame.display.get_surface(), (0, 0), ventana_rect)
 FPS = 60
 clock = pygame.time.Clock()
 
+def get_title_text():
+    if en:
+        return " Find the words related with green energy "
+    else:
+        return " Encuentra palabras relacionadas con energias renovables "
+
+def get_time_text():
+    if en:
+        return "Time: {tiempo_restante}"
+    else:
+        return "Tiempo: {tiempo_restante}"
+
 # Texto de indicación debajo del tiempo
 fuente_indicacion = pygame.font.Font(None, 36)
-texto_indicacion = fuente_indicacion.render(" Encuentra palabras relacionadas con energías renovables ", True, LETRA_COLOR)
+texto_indicacion = fuente_indicacion.render(get_title_text(), True, LETRA_COLOR)
 texto_rect = texto_indicacion.get_rect()
 texto_rect.topleft = (ANCHO - 400, 40)  # Ajusta la posición vertical para que esté debajo del tiempo
 ventana.blit(texto_indicacion, texto_rect.topleft)
@@ -133,7 +145,7 @@ tiempo_maximo = 600000 # 10 minutos (en milisegundos)
 
 # Calcular el tiempo restante en segundos
 tiempo_restante = (tiempo_maximo - (pygame.time.get_ticks() - tiempo_inicio)) // 1000
-tiempo_texto = f"Tiempo: {tiempo_restante} segundos"
+tiempo_texto = get_time_text()
 
 # Dibujar el tiempo restante en la parte superior central
 texto_tiempo = fuente_tiempo.render(tiempo_texto, True, LETRA_COLOR)
@@ -178,7 +190,7 @@ ventana.blit(pygame.display.get_surface(), (0, 0), ventana_rect)
 
 # Texto de indicación debajo del tiempo
 fuente_indicacion = pygame.font.Font(None, 36)  # Tamaño de fuente más grande
-texto_indicacion = fuente_indicacion.render("Encuentra palabras relacionadas con energías renovables", True, LETRA_COLOR)
+texto_indicacion = fuente_indicacion.render(get_title_text(), True, LETRA_COLOR)
 texto_rect = texto_indicacion.get_rect()
 
 # Ajustar la posición vertical para centrar en la parte superior
@@ -247,6 +259,22 @@ def options_game():
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
         SCREEN.blit(FONDO_IMAGEN, (0, 0))
+
+         # Calcular el tiempo restante
+        tiempo_actual = pygame.time.get_ticks()
+        tiempo_restante = max(0, tiempo_maximo - (tiempo_actual - tiempo_inicio))
+
+        # Dibujar el contador regresivo en la parte superior derecha
+        minutos_restantes = tiempo_restante // 60000
+        segundos_restantes = (tiempo_restante % 60000) // 1000
+        if tiempo_restante > 0 and not en:
+            tiempo_texto = f"Tiempo: {minutos_restantes:02}:{segundos_restantes:02}"
+        if tiempo_restante > 0 and en:
+            tiempo_texto = f"Time: {minutos_restantes:02}:{segundos_restantes:02}"
+        fuente_tiempo = pygame.font.Font(None, 50)
+        texto_tiempo = fuente_tiempo.render(tiempo_texto, True, LETRA_COLOR)
+        ventana.blit(texto_tiempo, (ANCHO - texto_tiempo.get_width() - 10, 10))
+
         BG2 = pygame.image.load("assets/background_2.png")
         BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
         SCREEN.blit(BG2, (0, 0)) # Dibuja la imagen de fondo en la pantalla
@@ -316,6 +344,21 @@ def options_game():
 def pause():
     while True:
         ventana.blit(FONDO_IMAGEN, (0, 0))
+
+        # Calcular el tiempo restante
+        tiempo_actual = pygame.time.get_ticks()
+        tiempo_restante = max(0, tiempo_maximo - (tiempo_actual - tiempo_inicio))
+
+        # Dibujar el contador regresivo en la parte superior derecha
+        minutos_restantes = tiempo_restante // 60000
+        segundos_restantes = (tiempo_restante % 60000) // 1000
+        if tiempo_restante > 0 and not en:
+            tiempo_texto = f"Tiempo: {minutos_restantes:02}:{segundos_restantes:02}"
+        if tiempo_restante > 0 and en:
+            tiempo_texto = f"Time: {minutos_restantes:02}:{segundos_restantes:02}"
+        fuente_tiempo = pygame.font.Font(None, 50)
+        texto_tiempo = fuente_tiempo.render(tiempo_texto, True, LETRA_COLOR)
+        ventana.blit(texto_tiempo, (ANCHO - texto_tiempo.get_width() - 10, 10))
 
         BG2 = pygame.image.load("assets/background_2.png")
         BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -501,9 +544,11 @@ while not terminado:
     # Dibujar el contador regresivo en la parte superior derecha
     minutos_restantes = tiempo_restante // 60000
     segundos_restantes = (tiempo_restante % 60000) // 1000
-    if tiempo_restante > 0:
-        tiempo_texto = f"Tiempo restante: {minutos_restantes:02}:{segundos_restantes:02}"
-    fuente_tiempo = pygame.font.Font(None, 34)
+    if tiempo_restante > 0 and not en:
+        tiempo_texto = f"Tiempo: {minutos_restantes:02}:{segundos_restantes:02}"
+    if tiempo_restante > 0 and en:
+        tiempo_texto = f"Time: {minutos_restantes:02}:{segundos_restantes:02}"
+    fuente_tiempo = pygame.font.Font(None, 50)
     texto_tiempo = fuente_tiempo.render(tiempo_texto, True, LETRA_COLOR)
     ventana.blit(texto_tiempo, (ANCHO - texto_tiempo.get_width() - 10, 10))
 
@@ -528,7 +573,7 @@ while not terminado:
 
     # Dibujar el texto de indicación
     fuente_indicacion = pygame.font.Font(None, 40)
-    texto_indicacion = fuente_indicacion.render(" Encuentra palabras relacionadas con energías renovables ", True, LETRA_COLOR)
+    texto_indicacion = fuente_indicacion.render(get_title_text(), True, LETRA_COLOR)
     pantalla_info_actual = pygame.display.Info()  # Define pantalla_info_actual
 
     ANCHO_VENTANA_PEQUENA = 800  # Define the value of ANCHO_VENTANA_PEQUENA
