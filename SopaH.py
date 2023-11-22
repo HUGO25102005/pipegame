@@ -541,6 +541,20 @@ while not terminado:
 
     ventana.blit(fondo_escalado, (0, 0))
 
+    # Dibujar el tablero centrado en la ventana con cuadrícula y selección
+    tablero_x = (ANCHO - len(MATRIZ_LETRAS[0]) * TAMANO_CELDA) // 2
+    tablero_y = (ALTO - len(MATRIZ_LETRAS) * TAMANO_CELDA) // 2
+    SELECCION_COLOR = (255, 0, 0)  # Define el SELECCION_COLOR
+
+    pygame.draw.rect(ventana, (255, 255, 255), (tablero_x, tablero_y, len(MATRIZ_LETRAS[0]) * TAMANO_CELDA, len(MATRIZ_LETRAS) * TAMANO_CELDA))
+
+        # Dibujar la cuadrícula en la matriz de letras
+    for x in range(tablero_x, tablero_x + len(MATRIZ_LETRAS[0]) * TAMANO_CELDA + 1, TAMANO_CELDA):
+        pygame.draw.line(ventana, LETRA_COLOR, (x, tablero_y), (x, tablero_y + len(MATRIZ_LETRAS) * TAMANO_CELDA))
+
+    for y in range(tablero_y, tablero_y + len(MATRIZ_LETRAS) * TAMANO_CELDA + 1, TAMANO_CELDA):
+        pygame.draw.line(ventana, LETRA_COLOR, (tablero_x, y), (tablero_x + len(MATRIZ_LETRAS[0]) * TAMANO_CELDA, y))
+
     # Dibujar el contador regresivo en la parte superior derecha
     minutos_restantes = tiempo_restante // 60000
     segundos_restantes = (tiempo_restante % 60000) // 1000
@@ -552,10 +566,7 @@ while not terminado:
     texto_tiempo = fuente_tiempo.render(tiempo_texto, True, LETRA_COLOR)
     ventana.blit(texto_tiempo, (ANCHO - texto_tiempo.get_width() - 10, 10))
 
-    # Dibujar el tablero centrado en la ventana con cuadrícula y selección
-    tablero_x = (ANCHO - len(MATRIZ_LETRAS[0]) * TAMANO_CELDA) // 2
-    tablero_y = (ALTO - len(MATRIZ_LETRAS) * TAMANO_CELDA) // 2
-    SELECCION_COLOR = (255, 0, 0)  # Define el SELECCION_COLOR
+    
 
     for y, fila in enumerate(MATRIZ_LETRAS):
         for x, letra in enumerate(fila):
@@ -653,13 +664,6 @@ while not terminado:
         texto_barra = fuente_barra.render(barra_texto, True, LETRA_COLOR)
         ventana.blit(texto_barra, (10, ALTO - 60))
 
-    # Dibujar la cuadrícula en la matriz de letras
-    for x in range(tablero_x, tablero_x + len(MATRIZ_LETRAS[0]) * TAMANO_CELDA + 1, TAMANO_CELDA):
-        pygame.draw.line(ventana, LETRA_COLOR, (x, tablero_y), (x, tablero_y + len(MATRIZ_LETRAS) * TAMANO_CELDA))
-
-    for y in range(tablero_y, tablero_y + len(MATRIZ_LETRAS) * TAMANO_CELDA + 1, TAMANO_CELDA):
-        pygame.draw.line(ventana, LETRA_COLOR, (tablero_x, y), (tablero_x + len(MATRIZ_LETRAS[0]) * TAMANO_CELDA, y))
-
     ventana.blit(pause_button_image, pause_button_rect.topleft)
 
     # Mostrar un mensaje de victoria si todas las palabras se han encontrado
@@ -706,7 +710,7 @@ while not terminado:
         if tiempo_restante >= 60000 and tiempo_restante < 180000:
             two_stars = True
     
-        if tiempo_restante < 60000:
+        if tiempo_restante < 180000:
             one_star = True
         
         if three_stars:

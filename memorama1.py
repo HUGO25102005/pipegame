@@ -42,6 +42,8 @@ three_stars = False
 two_stars = False
 one_star = False
 
+current_background = 0
+
 # Load the "pause.png" image
 pause_button_image = pygame.image.load("assets/pause_button1.png")
 pause_button_image = pygame.transform.scale(pause_button_image, (150, 150))  # Adjust the size as needed
@@ -456,6 +458,25 @@ while True:
 
     # Draw stars and victory message outside the event loop
     if gana():
+        # Load background images or create surfaces for animation
+        background_images = [
+        pygame.image.load("assets/energy.hidro.12.png"),        
+        pygame.image.load("assets/energy.hidro.13.png"), 
+        pygame.image.load("assets/energy.hidro.14.png"), 
+        pygame.image.load("assets/energy.hidro.15.png"), 
+        pygame.image.load("assets/energy.hidro.16.png"),
+        pygame.image.load("assets/energy.hidro.17.png"), 
+        pygame.image.load("assets/energy.hidro.18.png"),
+        pygame.image.load("assets/energy.hidro.19.png"),
+        pygame.image.load("assets/energy.hidro.20.png"),
+        pygame.image.load("assets/energy.hidro.21.png"),  
+        pygame.image.load("assets/energy.hidro.22.png"), 
+        ]
+
+        current_background = (current_background + 1) % len(background_images)
+        
+        BG1 = pygame.transform.scale(background_images[current_background], (SCREEN_WIDTH, SCREEN_HEIGHT))
+        pantalla_juego.blit(BG1, (0, 0))
 
         BG2 = pygame.image.load("assets/background_2.png")
         BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
