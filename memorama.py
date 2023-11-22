@@ -461,17 +461,17 @@ while True:
 
         # Load background images or create surfaces for animation
         background_images = [
-        pygame.image.load("assets/energy.hidro1.jpg"),        
-        pygame.image.load("assets/energy.hidro2.jpg"), 
-        pygame.image.load("assets/energy.hidro3.jpg"), 
-        pygame.image.load("assets/energy.hidro4.jpg"), 
-        pygame.image.load("assets/energy.hidro5.jpg"),
-        pygame.image.load("assets/energy.hidro6.jpg"), 
-        pygame.image.load("assets/energy.hidro7.jpg"),
-        pygame.image.load("assets/energy.hidro8.jpg"),
-        pygame.image.load("assets/energy.hidro9.jpg"),
-        pygame.image.load("assets/energy.hidro10.jpg"),  
-        pygame.image.load("assets/energy.hidro11.jpg"), 
+        pygame.image.load("assets/energy.hidro.12.png"),        
+        pygame.image.load("assets/energy.hidro.13.png"), 
+        pygame.image.load("assets/energy.hidro.14.png"), 
+        pygame.image.load("assets/energy.hidro.15.png"), 
+        pygame.image.load("assets/energy.hidro.16.png"),
+        pygame.image.load("assets/energy.hidro.17.png"), 
+        pygame.image.load("assets/energy.hidro.18.png"),
+        pygame.image.load("assets/energy.hidro.19.png"),
+        pygame.image.load("assets/energy.hidro.20.png"),
+        pygame.image.load("assets/energy.hidro.21.png"),  
+        pygame.image.load("assets/energy.hidro.22.png"), 
         ]
 
         current_background = (current_background + 1) % len(background_images)
