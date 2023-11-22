@@ -399,7 +399,15 @@ def options_game():
     while True:
         OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
+        if not game_over:
+            tiempo_restante = int(tiempo_final - time.time())
+
         SCREEN.blit(BG, (0, 0))
+        if not game_over and tiempo_restante > 0:
+            # Actualiza y dibuja el texto del temporizador
+            timer_text = font.render(get_time_text().format(tiempo_restante), True, (255, 0, 0))
+            text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+            Screen.blit(timer_text, text_rect)
         BG2 = pygame.image.load("assets/background_2.png")
         BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
         SCREEN.blit(BG2, (0, 0)) # Dibuja la imagen de fondo en la pantalla
@@ -469,6 +477,13 @@ def options_game():
 def pause():
     while True:
         SCREEN.blit(BG, (0, 0))
+        if not game_over:
+            tiempo_restante = int(tiempo_final - time.time())
+        if not game_over and tiempo_restante > 0:
+            # Actualiza y dibuja el texto del temporizador
+            timer_text = font.render(get_time_text().format(tiempo_restante), True, (255, 0, 0))
+            text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+            Screen.blit(timer_text, text_rect)
         BG2 = pygame.image.load("assets/background_2.png")
         BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
         SCREEN.blit(BG2, (0, 0)) # Dibuja la imagen de fondo en la pantalla
@@ -496,7 +511,12 @@ def pause():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if CONTINUE_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    return
+                    if tiempo_restante > 0:
+                        return
+                    else:
+                        exec(open("./pipegame1.py", "r").read(), globals()) 
+                        pygame.quit()
+                        sys.exit()
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     options_game()
                 if RESTART_BUTTON.checkForInput(MENU_MOUSE_POS):
@@ -686,9 +706,10 @@ if __name__ == "__main__":
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN and reset_button_rect.collidepoint(event.pos):
-                    exec(open("./pipegame.py", "r").read(), globals()) 
+                    exec(open("./pipegame1.py", "r").read(), globals()) 
                     pygame.quit()
                     sys.exit()
         
         pygame.display.update()
         MyClock.tick(120)
+

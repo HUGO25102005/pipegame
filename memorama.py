@@ -17,6 +17,10 @@ en = False
 with open('./__pycache__/en.txt', 'r') as archivo:
    en = bool(int(archivo.read()))
 
+volume = 0.5  # Initial volume
+min_volume = 0.0
+max_volume = 1.0
+
 altura_boton = 30   #para iniciar el juego (tamaño)
 medida_cuadro = 260  #tamaño de la imagen
 nombre_imagen_oculta = "imagenes/pregunta1.png" #imagen de la tarjeta volteada
@@ -38,6 +42,12 @@ three_stars = False
 two_stars = False
 one_star = False
 
+# Load the "pause.png" image
+pause_button_image = pygame.image.load("assets/pause_button1.png")
+pause_button_image = pygame.transform.scale(pause_button_image, (150, 150))  # Adjust the size as needed
+
+# Create a button rectangle in the top left corner
+pause_button_rect = pause_button_image.get_rect(topleft=(10, 10))
 
 class cuadro:
     def __init__(self, fuente_imagen): #mostrar las imagenes falso no se ve la imagen, verdadero se ve la imagen.
@@ -168,12 +178,182 @@ def get_start_text():
     if not en:
         return "INICIAR JUEGO"
 
+def get_continue_text():
+    if en: 
+        return "CONTINUE"
+    else:
+        return "CONTINUAR"
+
+def get_restart_text():
+    if en: 
+        return "RESTART"
+    else:
+        return "REINICIAR"
+
+def get_options_text():
+    if en: 
+        return "OPTIONS"
+    else:
+        return "OPCIONES"
+
+def get_quit_text():
+    if en: 
+        return "QUIT"
+    else:
+        return "SALIR"
+
+def get_back1_text():
+    if en:
+        return "BACK"
+    else:
+        return "ATRAS"
+
+def options_game():
+    global volume, en
+
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+
+        tiempo_restante = int(tiempo_final - time.time())
+
+        pantalla_juego.blit(BG, (0, 0))
+        if tiempo_restante > 0:
+            # Actualiza y dibuja el texto del temporizador
+            timer_text = font.render(get_time_text().format(tiempo_restante), True, (255, 0, 0))
+            text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+            pantalla_juego.blit(timer_text, text_rect)
+        BG2 = pygame.image.load("assets/background_2.png")
+        BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        pantalla_juego.blit(BG2, (0, 0)) # Dibuja la imagen de fondo en la pantalla
+
+        # Carga la imagen del volumen al comienzo de la función
+        volumen_image = pygame.image.load("./assets/volumen_menu.png")
+
+        # Define bar position and dimensions
+        bar_x = SCREEN_WIDTH // 4  # Ajustar la posición de la barra según la resolución
+        bar_y = SCREEN_HEIGHT // 4
+        bar_width = SCREEN_WIDTH // 2
+        bar_height = 20
+
+        OPTIONS_ID = Button(image=pygame.image.load("assets/options.png"), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2.5),
+                            text_input=get_language_text(), font=get_font(75), base_color="Black", hovering_color="")
+
+        OPTIONS_ID.update(pantalla_juego)
+
+        # Dibuja la imagen del volumen al lado izquierdo de la barra
+        SCREEN.blit(volumen_image, (bar_x - 100, bar_y - 40))  # Ajusta las coordenadas
+
+        OPTIONS_EN = Button(image=pygame.image.load(get_language()), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.8),
+                            text_input="", font=get_font(75), base_color="Black", hovering_color="Green")
+
+        OPTIONS_EN.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_EN.update(pantalla_juego)
+
+        # Draw the volume bar
+        bar_color = (255, 255, 255)  # White color
+        pygame.draw.rect(pantalla_juego, bar_color, (bar_x, bar_y, bar_width, bar_height))
+
+        # Draw a volume indicator on the bar
+        indicator_pos = bar_x + int(volume * bar_width)
+        indicator_color = (0, 255, 0)  # Green color
+        pygame.draw.rect(pantalla_juego, indicator_color, (indicator_pos, bar_y - 5, 10, 30))
+
+        OPTIONS_BACK = Button(image=pygame.image.load("assets/play.png"), pos=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 1.2),
+                              text_input=get_back1_text(), font=get_font(75), base_color="Black", hovering_color="Cyan")
+
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(pantalla_juego)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()  # Get mouse position
+                if bar_x <= mouse_pos[0] <= bar_x + bar_width and bar_y <= mouse_pos[1] <= bar_y + bar_height:
+                    volume = calculate_volume(mouse_pos, bar_x, bar_y, bar_width)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_EN.checkForInput(OPTIONS_MOUSE_POS):
+                    if en:
+                        en = False
+                    else:
+                        en = True
+
+                    # Guardar el valor en un archivo
+                    with open('./__pycache__/en.txt', 'w') as archivo:
+                        archivo.write(str(int(en)))
+
+        pygame.display.update()
+
+def pause():
+    while True:
+        pantalla_juego.blit(BG, (0, 0))
+        tiempo_restante = int(tiempo_final - time.time())
+        if tiempo_restante > 0:
+            # Actualiza y dibuja el texto del temporizador
+            timer_text = font.render(get_time_text().format(tiempo_restante), True, (255, 0, 0))
+            text_rect = timer_text.get_rect(topright=(SCREEN_WIDTH - 10, 10))
+            pantalla_juego.blit(timer_text, text_rect)
+        BG2 = pygame.image.load("assets/background_2.png")
+        BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        pantalla_juego.blit(BG2, (0, 0)) # Dibuja la imagen de fondo en la pantalla
+
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+        
+        # Crea botones para "JUGAR", "OPCIONES" y "SALIR" en el menú principal
+        CONTINUE_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 250), 
+                            text_input=get_continue_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+        RESTART_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 350), 
+                            text_input=get_restart_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/options.png"), pos=get_scaled_position(640, 450), 
+                            text_input=get_options_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+        QUIT_BUTTON = Button(image=pygame.image.load("assets/quit.png"), pos=get_scaled_position(640, 550), 
+                           text_input=get_quit_text(), font=get_scaled_font(75), base_color="White", hovering_color="Cyan")
+        
+        # Actualiza y muestra los botones en el menú principal
+        for button in [CONTINUE_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON, RESTART_BUTTON]:
+            button.changeColor(MENU_MOUSE_POS)
+            button.update(SCREEN)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if CONTINUE_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    if tiempo_restante > 0:
+                        return
+                    else:
+                        pygame.mixer.stop()
+                        exec(open("./memorama.py", "r").read(), globals()) 
+                        pygame.quit()
+                        sys.exit()
+                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    options_game()
+                if RESTART_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    pygame.mixer.stop()
+                    exec(open("./memorama.py", "r").read(), globals()) 
+                    pygame.quit()
+                    sys.exit()
+                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    pygame.mixer.stop()
+                    exec(open("./main.py", "r").read(), globals()) 
+                    pygame.quit()
+                    sys.exit()
+
+        pygame.display.update()
+
 #INICIA PANTALLA.......................................................
 # creamos la pantalla
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pantalla_juego = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 pygame.display.set_caption('Memorama de las energias renovables')
-pygame.mixer.Sound.play(sonido_fondo, -1)  
+pygame.mixer.music.load('musica/musica_fondo.mp3')
+pygame.mixer.music.set_volume(volume)
+pygame.mixer.music.play(-1)
 while True:
     tiempo_restante = int(tiempo_final - time.time())
 
@@ -182,6 +362,8 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN and puede_jugar:
             xAbsoluto, yAbsoluto = event.pos
+            if pause_button_rect.collidepoint(event.pos) and juego_iniciado:
+                    pause()
             if boton.collidepoint(event.pos):
                 if not juego_iniciado:
                     iniciar_juego()
@@ -250,6 +432,7 @@ while True:
         y += medida_cuadro
 
     if juego_iniciado:
+        pantalla_juego.blit(pause_button_image, pause_button_rect)
         pygame.draw.rect(pantalla_juego, color_blanco, boton)
         pantalla_juego.blit(fuente.render(get_start_text(), True, color_gris), (xFuente, yFuente))
         if tiempo_restante > 0 and not gana():

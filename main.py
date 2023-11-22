@@ -191,6 +191,10 @@ def play():
                     pygame.mixer.music.stop()
                     exec(open("Sopa2.1.py", "r").read(), globals()) # Ejecuta el archivo "pipegame.py" 
                     pygame.display.update()
+                if rect_3.collidepoint(mouse_pos) and dif:
+                    pygame.mixer.music.stop()
+                    exec(open("SopaH.py", "r").read(), globals()) # Ejecuta el archivo "pipegame.py" 
+                    pygame.display.update()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
                     main_menu()
