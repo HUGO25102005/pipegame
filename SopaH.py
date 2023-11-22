@@ -664,6 +664,9 @@ while not terminado:
 
     # Mostrar un mensaje de victoria si todas las palabras se han encontrado
     if todas_encontradas:
+        BG1 = pygame.image.load("assets/energia.solar.1.jpg")
+        BG1 = pygame.transform.scale(BG1, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        SCREEN.blit(BG1, (0, 0))
         BG2 = pygame.image.load("assets/background_2.png")
         BG2 = pygame.transform.scale(BG2, (SCREEN_WIDTH, SCREEN_HEIGHT))
         SCREEN.blit(BG2, (0, 0))
